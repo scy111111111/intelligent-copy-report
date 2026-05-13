@@ -1,627 +1,559 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智能文案效果分析报告</title>
-<!-- SheetJS - Excel导出库 -->
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<style>
-:root {
-  --primary: #e8394d; --primary-light: #fff1f0; --primary-dark: #cf1322;
-  --green: #52c41a; --blue: #1890ff; --orange: #faad14; --red: #ff4d4f;
-  --bg: #f5f7fa; --card: #fff; --text: #1f2937; --text-sec: #6b7280; --border: #e5e7eb;
-  --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.04);
-  --radius: 14px;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-.container { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
-
-/* Header */
-.header { background: linear-gradient(135deg, #e8394d 0%, #f5576c 50%, #ff8a80 100%); color: #fff; padding: 40px 48px; border-radius: 20px; margin-bottom: 28px; position: relative; overflow: hidden; }
-.header::before { content: ''; position: absolute; right: -60px; top: -60px; width: 280px; height: 280px; background: rgba(255,255,255,0.06); border-radius: 50%; }
-.header::after { content: ''; position: absolute; right: 80px; bottom: -40px; width: 160px; height: 160px; background: rgba(255,255,255,0.04); border-radius: 50%; }
-.header h1 { font-size: 30px; font-weight: 800; letter-spacing: 0.5px; }
-.header .sub { margin-top: 6px; opacity: 0.85; font-size: 14px; letter-spacing: 0.3px; }
-.header .date-range { margin-top: 14px; background: rgba(255,255,255,0.18); backdrop-filter: blur(4px); display: inline-flex; align-items: center; gap: 6px; padding: 6px 20px; border-radius: 24px; font-size: 13px; }
-.score-badge { position: absolute; right: 48px; top: 50%; transform: translateY(-50%); text-align: center; z-index: 1; }
-.score-badge .score { font-size: 56px; font-weight: 900; line-height: 1; text-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-.score-badge .label { font-size: 13px; opacity: 0.85; margin-top: 6px; }
-
-/* Section */
-.section { background: var(--card); border-radius: var(--radius); padding: 32px 36px; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.03); transition: box-shadow 0.3s; }
-.section:hover { box-shadow: var(--shadow-lg); }
-.section-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; padding-left: 14px; border-left: 4px solid var(--primary); display: flex; align-items: center; gap: 8px; }
-.section-title span { color: var(--primary); }
-
-/* Metrics */
-.metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.metric-card { background: linear-gradient(145deg, #fafbfc 0%, #f8f9fb 100%); border-radius: 12px; padding: 22px; border: 1px solid var(--border); transition: all 0.3s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; }
-.metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), #ff8a80); opacity: 0; transition: opacity 0.3s; }
-.metric-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(232,57,77,0.08); }
-.metric-card:hover::before { opacity: 1; }
-.metric-card .label { font-size: 12px; color: var(--text-sec); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-.metric-card .value { font-size: 28px; font-weight: 800; color: var(--text); }
-.metric-card .detail { font-size: 12px; color: #9ca3af; margin-top: 10px; line-height: 1.9; }
-.tag-up { color: var(--green) !important; }
-.tag-down { color: var(--red) !important; }
-
-/* Slot Tabs */
-.slot-tabs { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
-.slot-tab { padding: 8px 28px; border-radius: 24px; border: 1.5px solid var(--border); cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); background: var(--card); user-select: none; }
-.slot-tab:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-.slot-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 12px rgba(232,57,77,0.3); }
-
-/* AI Conclusion */
-.ai-conclusion { background: linear-gradient(135deg, #fffbf0 0%, #fff5f5 100%); border-radius: 12px; padding: 28px; border: 1px solid #ffe0cc; position: relative; }
-.ai-conclusion::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #faad14, #e8394d, #1890ff); border-radius: 12px 12px 0 0; }
-.ai-conclusion h4 { color: var(--primary); font-size: 17px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-.ai-conclusion h4::before { content: ''; display: inline-block; width: 28px; height: 28px; background: linear-gradient(135deg, var(--primary), #ff8a80); border-radius: 8px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 110 2h-1.07A7.001 7.001 0 0113 22h-2a7.001 7.001 0 01-6.93-6H3a1 1 0 110-2h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2zm0 7a5 5 0 00-5 5 5 5 0 005 5h0a5 5 0 005-5 5 5 0 00-5-5zm-1.5 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm3 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z'/%3E%3C/svg%3E"); background-size: 18px; background-repeat: no-repeat; background-position: center; }
-.conclusion-item { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px dashed #f0e0d0; }
-.conclusion-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-.conclusion-item h5 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: #374151; }
-.conclusion-item p, .conclusion-item li { font-size: 13px; line-height: 2.1; color: #6b7280; }
-.conclusion-item ul { padding-left: 20px; }
-.good { color: var(--green) !important; font-weight: 600; }
-.bad { color: var(--red) !important; font-weight: 600; }
-
-/* Table */
-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; overflow: hidden; border-radius: 10px; border: 1px solid var(--border); }
-table th { background: linear-gradient(180deg, #f9fafb, #f3f4f6); padding: 14px 18px; text-align: left; font-weight: 600; color: #4b5563; border-bottom: 2px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-table td { padding: 14px 18px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
-table tbody tr { transition: background 0.2s; }
-table tbody tr:hover { background: #f9fafb; }
-table tbody tr:last-child td { border-bottom: none; }
-
-/* Ring Score */
-.ring-container { display: flex; gap: 40px; justify-content: center; margin: 24px 0; }
-.ring-item { text-align: center; }
-.ring { width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #fff; margin: 0 auto 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); transition: transform 0.3s; }
-.ring:hover { transform: scale(1.08); }
-.ring-label { font-size: 13px; color: var(--text-sec); font-weight: 500; }
-.ring-s { background: linear-gradient(135deg, #52c41a, #73d13d); }
-.ring-a { background: linear-gradient(135deg, #1890ff, #40a9ff); }
-.ring-b { background: linear-gradient(135deg, #faad14, #ffc53d); }
-
-/* Copy Level */
-.copy-level { display: inline-block; padding: 3px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; }
-.level-s { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
-.level-a { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
-.level-b { background: #fffbe6; color: #faad14; border: 1px solid #ffe58f; }
-.level-c { background: #fff2f0; color: #ff4d4f; border: 1px solid #ffccc7; }
-
-/* Tags */
-.tag-blue { display: inline-flex; align-items: center; padding: 3px 10px; margin: 3px 4px; border-radius: 6px; font-size: 11px; background: #e8f4ff; color: #0958d9; border: 1px solid #91caff; white-space: nowrap; font-weight: 500; transition: all 0.2s; cursor: default; }
-.tag-blue:hover { background: #d0e8ff; border-color: #69b1ff; }
-.tag-group { line-height: 2.4; max-width: 420px; }
-
-/* Buttons */
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); text-decoration: none; white-space: nowrap; }
-.btn-primary { background: linear-gradient(135deg, var(--primary), #f5576c); color: #fff; box-shadow: 0 2px 8px rgba(232,57,77,0.25); }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,57,77,0.35); background: linear-gradient(135deg, var(--primary-dark), var(--primary)); }
-.btn-primary:active { transform: translateY(0); }
-.btn-primary svg { width: 14px; height: 14px; fill: currentColor; }
-.btn-success { background: linear-gradient(135deg, #52c41a, #73d13d); color: #fff; box-shadow: 0 2px 8px rgba(82,196,26,0.25); }
-.btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(82,196,26,0.35); background: linear-gradient(135deg, #389e0d, #52c41a); }
-.btn-success:active { transform: translateY(0); }
-.btn-success svg { width: 14px; height: 14px; fill: currentColor; }
-
-/* Strategy Tag */
-.strategy-tag { display: inline-block; padding: 3px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-.strategy-expand { background: #f6ffed; color: #52c41a; }
-.strategy-watch { background: #e6f7ff; color: #1890ff; }
-.strategy-optimize { background: #fffbe6; color: #faad14; }
-.strategy-replace { background: #fff2f0; color: #ff4d4f; }
-.strategy-offline { background: #f5f5f5; color: #8c8c8c; }
-
-/* Toast */
-.toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #fff; padding: 14px 28px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); z-index: 999; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); border-left: 4px solid var(--green); }
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast .icon { font-size: 20px; }
-
-/* Footer */
-.footer { text-align: center; padding: 32px 24px 16px; color: #9ca3af; font-size: 12px; }
-.footer a { color: var(--primary); text-decoration: none; }
-
-/* Animation */
-.fade-in { animation: fadeIn 0.6s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-.slide-in { animation: slideIn 0.4s ease-out; }
-
-/* Divider */
-.divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 16px 0; }
-
-/* Responsive */
-@media (max-width: 900px) {
-  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-  .score-badge { position: static; transform: none; margin-top: 16px; }
-  .header { padding: 28px; }
-  .tag-group { max-width: 280px; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能文案日报 - 2026-05-12</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: white; padding: 40px 0; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header .subtitle { font-size: 1.2em; opacity: 0.9; }
+        .score-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .score-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .score-title { font-size: 1.5em; color: #333; }
+        .score-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .score-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .score-item { text-align: center; padding: 20px; background: #f8f9fa; border-radius: 15px; }
+        .score-item .label { color: #666; font-size: 0.9em; margin-bottom: 10px; }
+        .score-item .value { font-size: 2em; font-weight: bold; color: #333; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: white; border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .metric-card .icon { font-size: 2em; margin-bottom: 10px; }
+        .metric-card .value { font-size: 1.8em; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .metric-card .label { color: #666; font-size: 0.9em; }
+        .section-title { color: white; font-size: 1.8em; margin: 40px 0 20px; padding-left: 10px; }
+        .experiment-list { display: flex; flex-direction: column; gap: 20px; }
+        .experiment-item { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .experiment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .experiment-title { font-size: 1.3em; font-weight: bold; color: #333; }
+        .experiment-meta { color: #666; font-size: 0.9em; margin-top: 5px; }
+        .experiment-badge { padding: 8px 20px; border-radius: 20px; font-size: 0.9em; font-weight: bold; }
+        .badge-positive { background: #d4edda; color: #155724; }
+        .badge-negative { background: #f8d7da; color: #721c24; }
+        .badge-stable { background: #e2e3e5; color: #383d41; }
+        .experiment-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 15px 0; }
+        .experiment-metric { text-align: center; padding: 15px; background: #f8f9fa; border-radius: 10px; }
+        .experiment-metric .label { color: #666; font-size: 0.85em; margin-bottom: 5px; }
+        .experiment-metric .value { font-size: 1.3em; font-weight: bold; color: #333; }
+        .attribution { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+        .attribution h4 { color: #333; margin-bottom: 10px; }
+        .attribution-list { list-style: none; padding-left: 0; }
+        .attribution-list li { padding: 8px 0; color: #666; position: relative; padding-left: 20px; }
+        .attribution-list li:before { content: "•"; position: absolute; left: 0; color: #667eea; font-weight: bold; }
+        .warning-section { background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 10px; margin-top: 30px; }
+        .warning-section h3 { color: #856404; margin-bottom: 15px; }
+        .warning-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .warning-item strong { color: #dc3545; }
+        .footer { text-align: center; color: white; padding: 40px 0; opacity: 0.8; }
+        @media (max-width: 768px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .score-breakdown { grid-template-columns: 1fr; }
+            .experiment-metrics { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
 </head>
 <body>
-
-<!-- Toast -->
-<div class="toast" id="toast"><span class="icon">✅</span><span id="toast-msg">正在跳转人群生成平台...</span></div>
-
-<div class="container">
-
-<!-- Header -->
-<!-- <div class="header fade-in"> -->
-<div class="header fade-in" style="text-align:center;">
-  <h1>智能文案效果分析报告</h1>
-  <div class="sub">京东支付· 内场智能文案AB实验数据分析</div>
-  <div class="date-range">📅 2026-04-10 至 2026-04-16</div>
-  <!-- <div class="score-badge">
-    <div class="score">87</div>
-    <div class="label">综合评分 · A级</div>
-  </div> -->
-</div>
-
-<!-- 一、效果汇总 -->
-<div class="section fade-in">
-  <div class="section-title"><span>一、</span>智能文案效果汇总 <button class="btn btn-success" onclick="exportSummaryToExcel()" style="margin-left:auto;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>导出汇总数据</button></div>
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <div class="label">智能文案覆盖订单量</div>
-      <div class="value">523w</div>
-      <div class="detail">覆盖率 <b>21.3%</b></div>
-    </div>
-    <div class="metric-card">
-      <div class="label">增量订单</div>
-      <div class="value">28,500</div>
-      <div class="detail">快捷: 22,000 · 白条: 5,200<br>钱包余额: 2,100 · 小金库: 1,200<br>数币: 520</div>
-    </div>
-    <div class="metric-card">
-      <div class="label">增量交易额</div>
-      <div class="value">258w</div>
-      <div class="detail">快捷: 210w · 白条: 55w<br>钱包余额: 6w · 小金库: 105w<br>数币: 3.2w</div>
-    </div>
-    <div class="metric-card">
-      <div class="label">增量UV</div>
-      <div class="value">21,800</div>
-      <div class="detail">快捷: 18,000 · 白条: 4,800<br>钱包余额: 1,900 · 小金库: 1,050<br>数币: 480</div>
-    </div>
-  </div>
-  <div class="divider"></div>
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <div class="label">非AT渗透率增量(订单)</div>
-      <div class="value tag-up">+0.32%</div>
-    </div>
-    <div class="metric-card">
-      <div class="label">非AT渗透率增量(交易)</div>
-      <div class="value tag-up">+0.28%</div>
-    </div>
-    <div class="metric-card">
-      <div class="label">非AT渗透率增量(UV)</div>
-      <div class="value tag-up">+0.18%</div>
-    </div>
-
-  </div>
-</div>
-
-<!-- 二、效果分析 -->
-<div class="section fade-in">
-  <div class="section-title"><span>二、</span>智能文案效果分析</div>
-  <p style="color:var(--primary);font-weight:600;margin-bottom:14px;font-size:14px;">坑位筛选</p>
-  <div class="slot-tabs">
-    <div class="slot-tab" onclick="switchSlot('slot2',this)">坑位2</div>
-    <div class="slot-tab" onclick="switchSlot('slot5',this)">坑位5</div>
-    <div class="slot-tab active" onclick="switchSlot('slot7',this)">坑位7</div>
-    <div class="slot-tab" onclick="switchSlot('slot8',this)">坑位8</div>
-    <div class="slot-tab" onclick="switchSlot('slot14',this)">坑位14</div>
-  </div>
-  <div id="slot-content"></div>
-</div>
-
-<!-- 文案分级 -->
-<div class="section fade-in">
-  <div class="section-title"><span>文案</span>健康度分级 <button class="btn btn-success" onclick="exportCopyLevelToExcel()" style="margin-left:auto;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>导出文案分级</button></div>
-  <table>
-    <thead>
-      <tr><th>文案内容</th><th>所属坑位</th><th>等级</th><th>增量订单</th><th>转化率Δ</th><th>稳定天数</th><th>策略建议</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>今日立减，最高省50元</td><td>坑位7</td><td><span class="copy-level level-s">S级</span></td><td>5,200</td><td class="good">+3.1%</td><td>12天</td><td><span class="strategy-tag strategy-expand">建议放量</span></td></tr>
-      <tr><td>五一专享，支付立减</td><td>坑位7</td><td><span class="copy-level level-s">S级</span></td><td>4,100</td><td class="good">+2.8%</td><td>8天</td><td><span class="strategy-tag strategy-expand">建议放量</span></td></tr>
-      <tr><td>Plus会员专享优惠</td><td>坑位5</td><td><span class="copy-level level-a">A级</span></td><td>3,200</td><td class="good">+1.9%</td><td>6天</td><td><span class="strategy-tag strategy-watch">继续观察</span></td></tr>
-      <tr><td>限时仅需1分钱</td><td>坑位2</td><td><span class="copy-level level-a">A级</span></td><td>2,800</td><td class="good">+1.5%</td><td>5天</td><td><span class="strategy-tag strategy-watch">继续观察</span></td></tr>
-      <tr><td>惊喜立省好物推荐</td><td>坑位8</td><td><span class="copy-level level-b">B级</span></td><td>980</td><td style="color:var(--orange);">+0.3%</td><td>4天</td><td><span class="strategy-tag strategy-optimize">优化文案</span></td></tr>
-      <tr><td>支付直降优惠</td><td>坑位14</td><td><span class="copy-level level-c">C级</span></td><td>-320</td><td class="bad">-0.5%</td><td>7天</td><td><span class="strategy-tag strategy-replace">建议替换</span></td></tr>
-      <tr><td>随机减至高99元</td><td>坑位14</td><td><span class="copy-level level-c">C级</span></td><td>-150</td><td class="bad">-0.8%</td><td>6天</td><td><span class="strategy-tag strategy-offline">建议下线</span></td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 三、AI文案生成推荐 -->
-<div class="section fade-in">
-  <div class="section-title"><span>三、</span>AI文案生成推荐 <button class="btn btn-success" onclick="exportRecommendToExcel()" style="margin-left:auto;"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>导出推荐数据</button></div>
-  <p style="color:var(--text-sec);margin-bottom:18px;font-size:13px;">根据不同用户类型的文案偏好，以及往期优质文案，为您推荐生成新的文案</p>
-  <table>
-    <thead>
-      <tr><th>用户类型</th><th>适合文案类型</th><th>建议保留文案</th><th>建议新增文案</th><th style="min-width:320px">推荐人群标签组合</th><th>操作</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><b>银发群体</b></td>
-        <td>简洁直白型</td>
-        <td>今日补贴<br>限量立减<br>支付直降</td>
-        <td>五一立减<br>劳动节专享</td>
-        <td class="tag-group"><span class="tag-blue">年龄分段: 56-65岁、65岁以上</span><span class="tag-blue">近N天微信支付活跃用户: 0-60天、0-180天</span><span class="tag-blue">快捷支付用户生命周期(新版): 成熟期、衰退期</span><span class="tag-blue">商城用户价值: 中低、低</span></td>
-        <td><button class="btn btn-primary" onclick="openCrowd('age_56_65,age_65_plus,wx_pay_0_180d,kj_lifecycle_mature,mall_value_low','银发群体 简洁直白型')"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>立即生成人群</button></td>
-      </tr>
-      <tr>
-        <td><b>小镇青年</b></td>
-        <td>性价比型</td>
-        <td>省钱攻略<br>划算之选</td>
-        <td>精打细算立省<br>超值好价不等人</td>
-        <td class="tag-group"><span class="tag-blue">常驻地址-城市级别: 五线城市、四线城市</span><span class="tag-blue">年龄分段: 18-25岁</span><span class="tag-blue">金融用户社会属性(八大人群): 7:小城双发</span><span class="tag-blue">商城京享值区间: [200, [5000</span><span class="tag-blue">近N天微信支付活跃用户: 0-30天、0-90天</span></td>
-        <td><button class="btn btn-primary" onclick="openCrowd('city_tier_4_5,age_18_25,social_7_xiaocheng,jxz_200_5000,wx_pay_0_90d','小镇青年 性价比型')"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>立即生成人群</button></td>
-      </tr>
-      <tr>
-        <td><b>宝妈</b></td>
-        <td>温馨关怀型</td>
-        <td>家庭省心价<br>宝贝好物</td>
-        <td>妈妈专属福利<br>全家省更多</td>
-        <td class="tag-group"><span class="tag-blue">性别: 女</span><span class="tag-blue">年龄分段: 26-35岁</span><span class="tag-blue">覆十大职群: 小镇家庭</span><span class="tag-blue">小白条近12个月订单量档位: (3, >20</span><span class="tag-blue">快捷支付用户生命周期(新版): 导入期、成长期、成熟期</span></td>
-        <td><button class="btn btn-primary" onclick="openCrowd('gender_female,age_26_35,job_family_student,bt_order_3_20,kj_lifecycle_intro_growth','宝妈 温馨关怀型')"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>立即生成人群</button></td>
-      </tr>
-      <tr>
-        <td><b>学生</b></td>
-        <td>活力优惠型</td>
-        <td>学生专享<br>校园补贴</td>
-        <td>青春特惠价<br>开学季立减</td>
-        <td class="tag-group"><span class="tag-blue">金融实名用户社会分群(十大):青年学生</span><span class="tag-blue">年龄分段: 18-22岁</span><span class="tag-blue">学历: 高中中专及以下、本科</span><span class="tag-blue">近N天微信支付活跃用户: 0-30天</span><span class="tag-blue">小白条订单金额档位: <=2000</span></td>
-        <td><button class="btn btn-primary" onclick="openCrowd('social_youth_student,age_18_22,edu_high_bachelor,wx_pay_0_30d,bt_amount_lte_2000','学生 活力优惠型')"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>立即生成人群</button></td>
-      </tr>
-      <tr>
-        <td><b>中产</b></td>
-        <td>品质权益型</td>
-        <td>品质之选<br>尊享立减</td>
-        <td>高端臻享折扣<br>品质生活再升级</td>
-        <td class="tag-group"><span class="tag-blue">金融用户社会属性(八大人群): 4:小资中产、3:中年工薪</span><span class="tag-blue">商城京享值区间: [5000, [10000, [20000</span><span class="tag-blue">白条卡用户风险等级: C、A、E</span><span class="tag-blue">房产预估: 高</span><span class="tag-blue">收入预测: 高、中高</span></td>
-        <td><button class="btn btn-primary" onclick="openCrowd('social_4_middle,jxz_5000_20000,bt_risk_cae,house_high,income_high','中产 品质权益型')"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>立即生成人群</button></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 四、归因与异常 -->
-<!-- <div class="section fade-in">
-  <div class="section-title"><span>四、</span>实验归因与异常检测</div>
-  <table>
-    <thead>
-      <tr><th>实验名称</th><th>场景</th><th>坑位</th><th>分流比</th><th>转化率Δ</th><th>判定</th><th>归因说明</th></tr>
-    </thead>
-    <tbody>
-      <tr><td><code>zy_alg_0421</code></td><td>快捷</td><td>坑位7</td><td>50/50</td><td class="good">+2.8%</td><td><span class="copy-level level-s">正向提升</span></td><td>"今日立减"紧迫感驱动转化</td></tr>
-      <tr><td><code>zy_alg_0418</code></td><td>白条</td><td>坑位5</td><td>50/50</td><td class="good">+1.9%</td><td><span class="copy-level level-a">正向提升</span></td><td>会员权益感知强</td></tr>
-      <tr><td><code>zy_alg_0415</code></td><td>钱包</td><td>坑位2</td><td>50/50</td><td style="color:var(--orange);">+0.2%</td><td><span class="copy-level level-b">稳定</span></td><td>效果平稳，继续观察</td></tr>
-      <tr><td><code>zy_alg_0413</code></td><td>快捷</td><td>坑位14</td><td>50/50</td><td class="bad">-0.5%</td><td><span class="copy-level level-c">负向下降</span></td><td>文案表述模糊，用户无感</td></tr>
-      <tr><td><code>zy_alg_0410</code></td><td>数币</td><td>坑位8</td><td>48/52</td><td class="bad">-0.1%</td><td><span style="color:var(--orange);font-size:12px;font-weight:600;">⚠️ 分流偏差</span></td><td>分流比偏差4%，数据需复核</td></tr>
-    </tbody>
-  </table>
-</div> -->
-
-<div class="footer">
-  智能文案分析报告 · 由 AIC Intelligent Copywriting Skill 自动生成 · 2026-04-17<br>
-  <a href="#">查看历史报告</a> · <a href="#">导出PDF</a> · <a href="#">分享报告</a>
-</div>
-
-</div>
-
-<script>
-var slotData = {
-  slot2: {
-    summary: '坑位2共有3条在投文案资源，总订单增量<b>8,600</b>笔，其中<b class="good">zy_alg_0416</b>效果最好，实验组较对照组转化率提升<b class="good">+1.5%</b>；<b class="bad">zy_alg_0411</b>效果最差，实验组较对照组订单转化率为<b class="bad">-0.2%</b>',
-    good: ['"限时仅需1分钱" — 极低价格锚点，用户点击意愿强，转化率显著提升','"新人专属红包" — 精准触达新用户，首单转化效果好','"满100减10" — 明确优惠幅度，用户决策成本低'],
-    bad: ['"优惠多多" — 缺乏具体信息，用户无感','"立即领取" — 行动号召但缺乏利益点'],
-    crowd: ['新用户群体偏好<b>新人专属</b>类文案，如"新人红包"、"首单立减"，转化率比对照组高<b class="good">2.1%</b>','<b>价格敏感型用户</b>偏好低价锚点文案，如"1分钱体验"','<b>年轻白领</b>偏好满减类文案，决策快速']
-  },
-  slot5: {
-    summary: '坑位5共有4条在投文案资源，总订单增量<b>12,300</b>笔，其中<b class="good">zy_alg_0419</b>效果最好，实验组较对照组转化率提升<b class="good">+1.9%</b>；<b class="bad">zy_alg_0412</b>效果最差，实验组较对照组订单转化率为<b class="bad">-0.3%</b>',
-    good: ['"Plus会员专享优惠" — 突出会员身份尊享，忠诚用户转化率高','"白条免息分期" — 降低支付门槛，大额订单转化显著','"积分抵现最高50元" — 利用存量积分激活消费意愿'],
-    bad: ['"超值好物" — 过于泛化，缺乏差异性','"购物享好礼" — 利益点模糊，用户期望管理差'],
-    crowd: ['<b>Plus会员</b>对专属权益文案响应度极高，转化率比对照组高<b class="good">2.5%</b>','<b>分期用户群体</b>偏好免息相关文案，客单价提升明显','<b>高频购物用户</b>偏好积分抵现文案，复购率提升<b class="good">1.8%</b>']
-  },
-  slot7: {
-    summary: '坑位7共有5条在投文案资源，总订单增量<b>15,200</b>笔，其中<b class="good">zy_alg_0421</b>效果最好，实验组较对照组转化率提升<b class="good">+2.8%</b>；<b class="bad">zy_alg_0413</b>效果最差，实验组较对照组订单转化率为<b class="bad">-0.5%</b>',
-    good: ['"今日立减" — 强调了营销活动的紧迫感，促进了用户的交易转化','"五一专享" — 节日营销，时效性强，用户感知度高','"Plus会员专享" — 突出了专属感，会员用户转化率提升显著','"限时仅需1分钱" — 通过1分钱强化了营销感知'],
-    bad: ['"惊喜立省" — 表述模糊，用户感知弱','"支付直降" — 缺乏具体优惠信息','"随机减至高" — 营销不确定，用户信任度低'],
-    crowd: ['20岁以下<b>女性群体</b>偏好情感类文案，如"专属你的优惠"、"宠你立减"，转化率比对照组高<b class="good">3.2%</b>','<b>银发群体</b>偏好简洁直白型文案，如"今日补贴"、"限量立减"','<b>Plus会员</b>偏好权益强调类文案，如"会员尊享价"','<b>小镇青年</b>偏好性价比类文案，如"省钱攻略"、"划算之选"']
-  },
-  slot8: {
-    summary: '坑位8共有3条在投文案资源，总订单增量<b>4,200</b>笔，其中<b class="good">zy_alg_0417</b>效果最好，实验组较对照组转化率提升<b class="good">+0.8%</b>；<b class="bad">zy_alg_0410</b>效果最差，实验组较对照组订单转化率为<b class="bad">-0.1%</b>，且存在分流偏差',
-    good: ['"数币支付享折上折" — 新支付方式尝鲜心理，转化效果正向','"小金库零钱支付" — 唤醒沉睡资金，用户支付意愿提升'],
-    bad: ['"惊喜立省好物推荐" — 文案信息量过大，焦点分散','"多种支付方式" — 功能描述型文案，缺乏营销感染力'],
-    crowd: ['<b>数币尝鲜用户</b>偏好新奇体验类文案，转化率比对照组高<b class="good">1.2%</b>','<b>小金库用户</b>对零钱唤醒类文案响应度高','<b>中老年用户</b>对过于复杂的文案接受度低，建议简化表达']
-  },
-  slot14: {
-    summary: '坑位14共有3条在投文案资源，总订单增量<b>1,800</b>笔，整体表现较弱。<b class="bad">zy_alg_0413</b>和<b class="bad">zy_alg_0409</b>效果均为负向，建议全面优化该坑位文案策略',
-    good: ['"钱包余额支付立减2元" — 明确金额，用户感知清晰，唯一正向文案'],
-    bad: ['"支付直降优惠" — 缺乏具体优惠金额，用户无法建立价值预期','"随机减至高99元" — "随机"降低用户信任，"至高"感知虚假','"快来看看" — 无利益点纯引流文案，转化率极低'],
-    crowd: ['<b>所有人群</b>对该坑位文案响应度均偏低，建议重新评估坑位曝光位置','<b>钱包余额用户</b>对明确金额减免文案有一定响应，转化率<b class="good">+0.4%</b>','建议该坑位<b>暂停低效文案投放</b>，集中资源优化后重新上线']
-  }
-};
-function renderSlot(key) {
-  var d = slotData[key], name = key.replace('slot','坑位');
-  var h = '<div class="ai-conclusion slide-in"><h4>AI分析结论</h4>';
-  h += '<div class="conclusion-item"><h5>1、'+name+'投放总览</h5><p>'+d.summary+'</p></div>';
-  h += '<div class="conclusion-item"><h5>2、文案整体效果</h5><p><b>好的文案：</b></p><ul>';
-  d.good.forEach(function(g){ h += '<li class="good">'+g+'</li>'; });
-  h += '</ul><p style="margin-top:8px;"><b>差的文案：</b></p><ul>';
-  d.bad.forEach(function(b){ h += '<li class="bad">'+b+'</li>'; });
-  h += '</ul></div><div class="conclusion-item"><h5>3、by人群分析文案效果</h5><ul>';
-  d.crowd.forEach(function(c){ h += '<li>'+c+'</li>'; });
-  h += '</ul></div></div>';
-  document.getElementById('slot-content').innerHTML = h;
-}
-function switchSlot(key, el) {
-  document.querySelectorAll('.slot-tab').forEach(function(t){ t.classList.remove('active'); });
-  el.classList.add('active');
-  renderSlot(key);
-}
-renderSlot('slot7');
-
-/* ========== 群体创建弹窗系统 ========== */
-var tagLibrary = {
-  'age_56_65': {label:'年龄分段', val:'56-65岁', cat:'近N日用户基础属性'},
-  'age_65_plus': {label:'年龄分段', val:'65岁以上', cat:'近N日用户基础属性'},
-  'age_18_25': {label:'年龄分段', val:'18-25岁', cat:'近N日用户基础属性'},
-  'age_26_35': {label:'年龄分段', val:'26-35岁', cat:'近N日用户基础属性'},
-  'age_18_22': {label:'年龄分段', val:'18-22岁', cat:'近N日用户基础属性'},
-  'age_30_45': {label:'年龄分段', val:'30-45岁', cat:'近N日用户基础属性'},
-  'wx_pay_0_180d': {label:'近N天微信支付活跃用户', val:'0-60天、0-180天', cat:'近N日对支付方式有使用行为'},
-  'wx_pay_0_90d': {label:'近N天微信支付活跃用户', val:'0-30天、0-90天', cat:'近N日对支付方式有使用行为'},
-  'wx_pay_0_30d': {label:'近N天微信支付活跃用户', val:'0-30天', cat:'近N日对支付方式有使用行为'},
-  'kj_lifecycle_mature': {label:'快捷支付用户生命周期(新版)', val:'成熟期、衰退期', cat:'快捷支付用户生命周期'},
-  'kj_lifecycle_intro_growth': {label:'快捷支付用户生命周期(新版)', val:'导入期、成长期、成熟期', cat:'快捷支付用户生命周期'},
-  'mall_value_low': {label:'商城用户价值', val:'中低、低', cat:'商城用户价值分层'},
-  'city_tier_4_5': {label:'常驻地址-城市级别', val:'五线城市、四线城市', cat:'近N日用户基础属性'},
-  'social_7_xiaocheng': {label:'金融用户社会属性(八大人群)', val:'7:小城双发', cat:'金融用户社会属性'},
-  'jxz_200_5000': {label:'商城京享值区间', val:'[200, [5000', cat:'商城用户价值分层'},
-  'jxz_5000_20000': {label:'商城京享值区间', val:'[5000, [10000, [20000', cat:'商城用户价值分层'},
-  'gender_female': {label:'性别', val:'女', cat:'近N日用户基础属性'},
-  'job_family_student': {label:'覆十大职群', val:'小镇家庭、学生一族', cat:'金融用户社会属性'},
-  'bt_order_3_20': {label:'小白条近12个月订单量档位', val:'(3, >20', cat:'白条用户属性'},
-  'social_youth_student': {label:'金融实名用户社会分群(十大)', val:'青年白领、青年学生', cat:'金融用户社会属性'},
-  'edu_high_bachelor': {label:'学历', val:'高中中专及以下、本科', cat:'近N日用户基础属性'},
-  'bt_amount_lte_2000': {label:'小白条订单金额档位', val:'<=2000', cat:'白条用户属性'},
-  'social_4_middle': {label:'金融用户社会属性(八大人群)', val:'4:小资中产、3:中年工薪', cat:'金融用户社会属性'},
-  'bt_risk_cae': {label:'白条卡用户风险等级', val:'C、A、E', cat:'白条用户属性'},
-  'house_high': {label:'房产预估', val:'高', cat:'用户资产属性'},
-  'income_high': {label:'收入预测', val:'高、中高', cat:'用户资产属性'},
-  'income_mid_high': {label:'收入预测', val:'中高', cat:'用户资产属性'},
-  'family_has_child': {label:'家庭结构', val:'有子女', cat:'近N日用户基础属性'},
-  'car_owner_yes': {label:'有车用户', val:'是', cat:'用户资产属性'},
-  'invest_fund_regular': {label:'定投基金用户', val:'定投用户', cat:'金融用户属性'}
-};
-
-var _crowdBranches = [];
-function openCrowd(tagStr, name) {
-  var codes = tagStr ? tagStr.split(',') : [];
-  _crowdBranches = [];
-  var catMap = {};
-  codes.forEach(function(code) {
-    var t = tagLibrary[code];
-    if (!t) return;
-    if (!catMap[t.cat]) { catMap[t.cat] = { cat: t.cat, tags: [] }; _crowdBranches.push(catMap[t.cat]); }
-    catMap[t.cat].tags.push({ code: code, label: t.label, val: t.val });
-  });
-  if (_crowdBranches.length === 0) _crowdBranches.push({ cat: '选择标签', tags: [] });
-  document.getElementById('modal-crowd-name').value = name || '';
-  renderCrowdModal();
-  document.getElementById('crowd-modal-overlay').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeCrowd() {
-  document.getElementById('crowd-modal-overlay').style.display = 'none';
-  document.body.style.overflow = '';
-}
-function renderCrowdModal() {
-  var box = document.getElementById('modal-branches');
-  var h = '';
-  _crowdBranches.forEach(function(b, bi) {
-    h += '<div class="m-branch">';
-    h += '<div class="m-branch-head"><div class="m-branch-dot"></div><span class="m-branch-cat">' + b.cat + '</span></div>';
-    b.tags.forEach(function(t, ti) {
-      h += '<div class="m-form-row"><span class="m-form-label">' + t.label + '</span>';
-      h += '<select class="m-form-select"><option>动态时间</option><option>静态时间</option></select>';
-      h += '<span class="m-form-label">过去</span><input class="m-form-input" value="365"><span class="m-form-unit">天</span></div>';
-      h += '<div class="m-tag-row">';
-      var vals = t.val.split('、');
-      h += '<span class="m-tag">' + vals[0] + ' <span class="m-tag-x" onclick="removeCrowdTag('+bi+','+ti+')">×</span></span>';
-      if (vals.length > 1) h += '<span class="m-tag-more">+ ' + (vals.length - 1) + '</span>';
-      h += '</div>';
-    });
-    if (b.tags.length === 0) {
-      h += '<div class="m-form-row"><span class="m-form-label">标签</span><select class="m-form-select" style="min-width:200px;"><option>请选择标签...</option></select></div>';
-    }
-    h += '<div class="m-branch-foot"><button class="m-btn-sm" onclick="addCrowdTag('+bi+')">+ 标签</button><button class="m-btn-sm m-btn-del" onclick="removeCrowdBranch('+bi+')">删除</button></div>';
-    h += '</div>';
-    if (bi < _crowdBranches.length - 1) {
-      h += '<div class="m-logic"><span class="m-logic-btn active">或</span><span class="m-logic-btn">且</span><span class="m-logic-btn">非</span></div>';
-    }
-  });
-  box.innerHTML = h;
-  var total = 0;
-  _crowdBranches.forEach(function(b) { total += b.tags.length * 1420000 + Math.floor(Math.random() * 500000); });
-  document.getElementById('modal-crowd-count').textContent = total > 0 ? total.toLocaleString() : '-';
-}
-function addCrowdBranch() { _crowdBranches.push({ cat: '新增条件', tags: [] }); renderCrowdModal(); }
-function removeCrowdBranch(i) { _crowdBranches.splice(i, 1); if (_crowdBranches.length === 0) _crowdBranches.push({ cat: '选择标签', tags: [] }); renderCrowdModal(); }
-function removeCrowdTag(bi, ti) { _crowdBranches[bi].tags.splice(ti, 1); renderCrowdModal(); }
-function addCrowdTag(bi) { _crowdBranches[bi].tags.push({ code: 'new', label: '新标签', val: '待选择' }); renderCrowdModal(); }
-function submitCrowdModal() {
-  var name = document.getElementById('modal-crowd-name').value;
-  if (!name) { alert('请输入群体名称'); return; }
-  var t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = '群体「' + name + '」正在计算并分析，预计需要2-5分钟...';
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 3000);
-  closeCrowd();
-}
-
-/* ========== Excel导出功能 ========== */
-function exportToExcel(data, filename, sheetName) {
-  // 创建工作簿
-  var wb = XLSX.utils.book_new();
-  
-  // 创建工作表
-  var ws = XLSX.utils.aoa_to_sheet(data);
-  
-  // 设置列宽
-  var colWidths = [];
-  data[0].forEach(function(cell, i) {
-    var maxLen = 0;
-    data.forEach(function(row) {
-      var cellValue = row[i] ? String(row[i]) : '';
-      if (cellValue.length > maxLen) maxLen = cellValue.length;
-    });
-    colWidths.push({ wch: Math.min(Math.max(maxLen + 2, 10), 50) });
-  });
-  ws['!cols'] = colWidths;
-  
-  // 添加工作表到工作簿
-  XLSX.utils.book_append_sheet(wb, ws, sheetName);
-  
-  // 导出文件
-  XLSX.writeFile(wb, filename);
-  
-  // 显示提示
-  var t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = '✅ 已成功导出 ' + filename;
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 3000);
-}
-
-function exportSummaryToExcel() {
-  var data = [
-    ['指标名称', '数值', '详情'],
-    ['智能文案覆盖订单量', '523万', '覆盖率 21.3%'],
-    ['增量订单', '28,500', '快捷: 22,000 · 白条: 5,200 · 钱包余额: 2,100 · 小金库: 1,200 · 数币: 520'],
-    ['增量交易额', '258万', '快捷: 210万 · 白条: 55万 · 钱包余额: 6万 · 小金库: 105万 · 数币: 3.2万'],
-    ['增量UV', '21,800', '快捷: 18,000 · 白条: 4,800 · 钱包余额: 1,900 · 小金库: 1,050 · 数币: 480'],
-    ['非AT渗透率增量(订单)', '+0.32%', '正向提升'],
-    ['非AT渗透率增量(交易)', '+0.28%', '正向提升'],
-    ['非AT渗透率增量(UV)', '+0.18%', '正向提升']
-  ];
-  exportToExcel(data, '智能文案效果汇总_' + getDateString() + '.xlsx', '效果汇总');
-}
-
-function exportCopyLevelToExcel() {
-  var data = [
-    ['文案内容', '所属坑位', '等级', '增量订单', '转化率Δ', '稳定天数', '策略建议'],
-    ['今日立减，最高省50元', '坑位7', 'S级', '5,200', '+3.1%', '12天', '建议放量'],
-    ['五一专享，支付立减', '坑位7', 'S级', '4,100', '+2.8%', '8天', '建议放量'],
-    ['Plus会员专享优惠', '坑位5', 'A级', '3,200', '+1.9%', '6天', '继续观察'],
-    ['限时仅需1分钱', '坑位2', 'A级', '2,800', '+1.5%', '5天', '继续观察'],
-    ['惊喜立省好物推荐', '坑位8', 'B级', '980', '+0.3%', '4天', '优化文案'],
-    ['支付直降优惠', '坑位14', 'C级', '-320', '-0.5%', '7天', '建议替换'],
-    ['随机减至高99元', '坑位14', 'C级', '-150', '-0.8%', '6天', '建议下线']
-  ];
-  exportToExcel(data, '文案健康度分级_' + getDateString() + '.xlsx', '文案分级');
-}
-
-function exportRecommendToExcel() {
-  var data = [
-    ['用户类型', '适合文案类型', '建议保留文案', '建议新增文案', '推荐人群标签组合'],
-    ['银发群体', '简洁直白型', '今日补贴、限量立减、支付直降', '五一立减、劳动节专享', '年龄分段: 56-65岁、65岁以上; 近N天微信支付活跃用户: 0-60天、0-180天; 快捷支付用户生命周期: 成熟期、衰退期; 商城用户价值: 中低、低'],
-    ['小镇青年', '性价比型', '省钱攻略、划算之选', '精打细算立省、超值好价不等人', '常驻地址-城市级别: 五线城市、四线城市; 年龄分段: 18-25岁; 金融用户社会属性: 7:小城双发; 商城京享值区间: [200, [5000; 近N天微信支付活跃用户: 0-30天、0-90天'],
-    ['宝妈', '温馨关怀型', '家庭省心价、宝贝好物', '妈妈专属福利、全家省更多', '性别: 女; 年龄分段: 26-35岁; 覆十大职群: 小镇家庭; 小白条近12个月订单量档位: (3, >20; 快捷支付用户生命周期: 导入期、成长期、成熟期'],
-    ['学生', '活力优惠型', '学生专享、校园补贴', '青春特惠价、开学季立减', '金融实名用户社会分群: 青年学生; 年龄分段: 18-22岁; 学历: 高中中专及以下、本科; 近N天微信支付活跃用户: 0-30天; 小白条订单金额档位: <=2000'],
-    ['中产', '品质权益型', '品质之选、尊享立减', '高端臻享折扣、品质生活再升级', '金融用户社会属性: 4:小资中产、3:中年工薪; 商城京享值区间: [5000, [10000, [20000; 白条卡用户风险等级: C、A、E; 房产预估: 高; 收入预测: 高、中高']
-  ];
-  exportToExcel(data, 'AI文案生成推荐_' + getDateString() + '.xlsx', '文案推荐');
-}
-
-function getDateString() {
-  var now = new Date();
-  var y = now.getFullYear();
-  var m = String(now.getMonth() + 1).padStart(2, '0');
-  var d = String(now.getDate()).padStart(2, '0');
-  return y + m + d;
-}
-</script>
-
-<!-- 群体创建弹窗 -->
-<style>
-#crowd-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(2px);}
-.crowd-modal{background:#fff;width:900px;max-width:92vw;max-height:88vh;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.18);}
-.cm-header{background:linear-gradient(135deg,#1677ff,#4096ff);color:#fff;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;}
-.cm-header h3{font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px;}
-.cm-header h3 .dot{width:26px;height:26px;background:rgba(255,255,255,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
-.cm-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
-.cm-close:hover{background:rgba(255,255,255,0.35);}
-.cm-body{flex:1;overflow-y:auto;padding:24px 28px;}
-.cm-info{background:#e6f4ff;border:1px solid #91caff;border-radius:8px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;color:#0958d9;flex-wrap:wrap;}
-.cm-info input{padding:6px 12px;border:1px solid #91caff;border-radius:6px;font-size:13px;outline:none;width:240px;transition:border-color 0.2s;}
-.cm-info input:focus{border-color:#1677ff;box-shadow:0 0 0 2px rgba(22,119,255,0.1);}
-.cm-section{margin-bottom:20px;}
-.cm-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.cm-section-title{font-size:15px;font-weight:700;color:#1f2937;}
-.m-branch{background:#fafbfc;border:1px solid #e5e7eb;border-radius:10px;padding:18px 22px;margin-bottom:12px;transition:border-color 0.2s;}
-.m-branch:hover{border-color:#b7d4ff;}
-.m-branch-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
-.m-branch-dot{width:8px;height:8px;border-radius:50%;background:#1677ff;}
-.m-branch-cat{font-size:14px;font-weight:600;color:#1f2937;background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:5px 14px;}
-.m-form-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
-.m-form-label{font-size:12px;color:#6b7280;min-width:60px;text-align:right;}
-.m-form-select{padding:5px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;background:#fff;outline:none;}
-.m-form-input{padding:5px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;width:60px;text-align:center;outline:none;}
-.m-form-unit{font-size:12px;color:#6b7280;}
-.m-tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-left:72px;margin-bottom:10px;}
-.m-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;font-size:12px;background:#e6f4ff;color:#1677ff;border:1px solid #91caff;}
-.m-tag-x{cursor:pointer;color:#91caff;font-size:14px;transition:color 0.2s;}
-.m-tag-x:hover{color:#ff4d4f;}
-.m-tag-more{font-size:11px;color:#1677ff;background:#e6f4ff;border:1px solid #91caff;padding:2px 8px;border-radius:10px;}
-.m-branch-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px dashed #e5e7eb;}
-.m-btn-sm{padding:4px 12px;border-radius:5px;font-size:12px;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#6b7280;transition:all 0.2s;}
-.m-btn-sm:hover{border-color:#1677ff;color:#1677ff;}
-.m-btn-del{color:#ff4d4f;border-color:#ffccc7;}
-.m-btn-del:hover{background:#fff2f0;color:#ff4d4f;}
-.m-logic{display:flex;align-items:center;justify-content:center;gap:4px;margin:10px 0;}
-.m-logic-btn{padding:3px 14px;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#6b7280;transition:all 0.2s;}
-.m-logic-btn.active{background:#1677ff;color:#fff;border-color:#1677ff;}
-.cm-footer{padding:16px 28px;border-top:1px solid #e5e7eb;display:flex;justify-content:flex-end;gap:10px;background:#fafbfc;}
-.cm-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#1f2937;transition:all 0.2s;}
-.cm-btn:hover{border-color:#1677ff;color:#1677ff;}
-.cm-btn-primary{background:#1677ff;color:#fff;border-color:#1677ff;padding:8px 28px;font-weight:600;}
-.cm-btn-primary:hover{background:#0958d9;}
-</style>
-<div id="crowd-modal-overlay" onclick="if(event.target===this)closeCrowd()">
-  <div class="crowd-modal">
-    <div class="cm-header">
-      <h3><span class="dot">C</span> AgileCDP · 群体创建</h3>
-      <button class="cm-close" onclick="closeCrowd()">✕</button>
-    </div>
-    <div class="cm-body">
-      <div class="cm-info">
-        <span>👥 群体人数预估：<b id="modal-crowd-count" style="font-size:15px;color:#1677ff;">-</b></span>
-        <span style="margin-left:12px;font-size:12px;color:#6b7280;">群体名称：</span>
-        <input id="modal-crowd-name" placeholder="请输入群体名称" />
-      </div>
-      <div class="cm-section">
-        <div class="cm-section-head">
-          <div class="cm-section-title">逻辑组合</div>
-          <div style="display:flex;gap:8px;">
-            <button class="m-btn-sm m-btn-del" onclick="_crowdBranches=[{cat:'选择标签',tags:[]}];renderCrowdModal();">清空</button>
-            <button class="m-btn-sm" style="background:#1677ff;color:#fff;border-color:#1677ff;" onclick="addCrowdBranch()">+ 新增分支</button>
-          </div>
+    <div class="container">
+        <div class="header">
+            <h1>📊 智能文案日报</h1>
+            <div class="subtitle">报告日期: 2026-05-12 | 生成时间: 2026-05-13 22:08:51</div>
         </div>
-        <div id="modal-branches"></div>
-      </div>
+        
+        <div class="score-card">
+            <div class="score-header">
+                <div class="score-title">综合评分</div>
+                <div class="score-badge">A - 可执行</div>
+            </div>
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="font-size: 4em; font-weight: bold; color: #667eea;">95</div>
+                <div style="color: #666; margin-top: 10px;">满分 100 分</div>
+            </div>
+            <div class="score-breakdown">
+                <div class="score-item">
+                    <div class="label">核心指标得分</div>
+                    <div class="value">60/60</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">辅助指标得分</div>
+                    <div class="value">20/25</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">过程指标得分</div>
+                    <div class="value">15/15</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="icon">🎯</div>
+                <div class="value">33.3%</div>
+                <div class="label">智能文案覆盖率</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">📦</div>
+                <div class="value">3,924</div>
+                <div class="label">增量订单</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">👥</div>
+                <div class="value">7,741</div>
+                <div class="label">增量用户</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">💰</div>
+                <div class="value">-262,558</div>
+                <div class="label">增量交易额(元)</div>
+            </div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="icon">📊</div>
+                <div class="value">61.3%</div>
+                <div class="label">非AT订单渗透率</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">📈</div>
+                <div class="value">61.4%</div>
+                <div class="label">非AT用户渗透率</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">💵</div>
+                <div class="value">55.7%</div>
+                <div class="label">非AT交易额渗透率</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">🔄</div>
+                <div class="value">22.33%</div>
+                <div class="label">整体转化率</div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">📋 实验归因报告</h2>
+        
+        <div class="experiment-list">
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 671997026391284</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 周一至高减￥, 今日至高减, PLUS至高减￥</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.16%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">3,626</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">3,729</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">85,877</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 3626 单</li>
+<li>增量交易额 85,877 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 778867300095187</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 算法组, 人工组</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.31%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">1,548</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">1,546</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">2,361,051</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 1548 单</li>
+<li>增量交易额 2,361,051 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 205717888006861</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 今日随机至高减, 周一随机至高减, PLUS</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.03%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">1,482</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">1,321</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">1,184,582</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 1482 单</li>
+<li>增量交易额 1,184,582 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 126779027149009</div>
+                        <div class="experiment-meta">收银台 | 坑位7-小金库 | 周几优惠, 今日随机至高减</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.17%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">757</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">703</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">37,559</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 757 单</li>
+<li>增量交易额 37,559 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 760856177219391</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | MG_5Z1QHFYJ3Z7V, MG_5Z1QHFYJ3Z7S, MG_5Z1QHFYJ3Z7T</div>
+                    </div>
+                    <span class="experiment-badge badge-positive">✅ 正向提升</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+3.54%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">603</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">1,052</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">-2,101,102</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 603 单</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 031982857774172</div>
+                        <div class="experiment-meta">结算页 | 坑位13 | 周几立减, 今日补贴¥</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.03%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">524</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">502</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">737,255</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 524 单</li>
+<li>增量交易额 737,255 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 681378031041901</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 算法组, AB组</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">-0.28%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">443</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">390</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">36,491</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>增量订单贡献 443 单</li>
+<li>增量交易额 36,491 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 925424965477989</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 周一, plus, 今日</div>
+                    </div>
+                    <span class="experiment-badge badge-positive">✅ 正向提升</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.66%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">167</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">192</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">11,497</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 167 单</li>
+<li>增量交易额 11,497 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 788958200748989</div>
+                        <div class="experiment-meta">收银台 | 坑位5 | 算法, 素材AB</div>
+                    </div>
+                    <span class="experiment-badge badge-negative">⚠️ 负向下降</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">-2.32%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">63</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">46</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">21,310</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>增量订单贡献 63 单</li>
+<li>增量交易额 21,310 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 081833919295683</div>
+                        <div class="experiment-meta">结算页 | 坑位13 | 专属立减</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.11%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">-19</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">-11</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">-150,170</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+                    </ul>
+                </div>
+            </div>
+
+        <div class="warning-section">
+            <h3>⚠️ 负向实验预警</h3>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 165093975187157</strong> - 【您有优惠可使用】, 【您有专属补贴待使用】<br>
+                    场景: 收银台 | 坑位: 坑位5<br>
+                    增量订单: -103 | 增量交易额: -11,962 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 070075827233913</strong> - 周几随机减, 今日随机减<br>
+                    场景: 结算页 | 坑位: 坑位13<br>
+                    增量订单: -118 | 增量交易额: 33,427 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 175195378701791</strong> - MG_5NUZVU3Y86BO, MG_5NUZVU3Y86BM<br>
+                    场景: 收银台 | 坑位: 坑位7<br>
+                    增量订单: -155 | 增量交易额: 3,238 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 813784615058588</strong> - 周特惠, 周补贴<br>
+                    场景: 收银台 | 坑位: 坑位7<br>
+                    增量订单: -183 | 增量交易额: -494,038 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 489184169598012</strong> - 周几立减, 今日补贴<br>
+                    场景: 收银台 | 坑位: 坑位7-小金库<br>
+                    增量订单: -184 | 增量交易额: -173,194 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+        </div>
+
+        <div class="footer">
+            <p>本报告由 AIC 智能文案分析系统自动生成</p>
+            <p>数据来源: sdm.sdm_jdt_pay_f02_ab_intel_contt_insid_site_indx_i_d</p>
+        </div>
     </div>
-    <div class="cm-footer">
-      <button class="cm-btn" onclick="closeCrowd()">返回报告</button>
-      <button class="cm-btn cm-btn-primary" onclick="submitCrowdModal()">🚀 计算并分析群体</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
