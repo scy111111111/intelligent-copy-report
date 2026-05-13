@@ -1,7 +1,7 @@
 # 智能文案效果分析报告
 
 ## 访问地址
-https://sunchenyu8.github.io/intelligent-copy-report/
+https://github.com/scy111111111/intelligent-copy-report
 
 ## 功能特性
 - 📊 智能文案效果汇总
