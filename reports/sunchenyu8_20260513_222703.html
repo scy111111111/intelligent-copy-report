@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能文案日报 - 2026-05-12</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: white; padding: 40px 0; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header .subtitle { font-size: 1.2em; opacity: 0.9; }
+        .score-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .score-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .score-title { font-size: 1.5em; color: #333; }
+        .score-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .score-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .score-item { text-align: center; padding: 20px; background: #f8f9fa; border-radius: 15px; }
+        .score-item .label { color: #666; font-size: 0.9em; margin-bottom: 10px; }
+        .score-item .value { font-size: 2em; font-weight: bold; color: #333; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: white; border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .metric-card .icon { font-size: 2em; margin-bottom: 10px; }
+        .metric-card .value { font-size: 1.8em; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .metric-card .label { color: #666; font-size: 0.9em; }
+        .section-title { color: white; font-size: 1.8em; margin: 40px 0 20px; padding-left: 10px; }
+        .experiment-list { display: flex; flex-direction: column; gap: 20px; }
+        .experiment-item { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .experiment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .experiment-title { font-size: 1.3em; font-weight: bold; color: #333; }
+        .experiment-meta { color: #666; font-size: 0.9em; margin-top: 5px; }
+        .experiment-badge { padding: 8px 20px; border-radius: 20px; font-size: 0.9em; font-weight: bold; }
+        .badge-positive { background: #d4edda; color: #155724; }
+        .badge-negative { background: #f8d7da; color: #721c24; }
+        .badge-stable { background: #e2e3e5; color: #383d41; }
+        .experiment-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 15px 0; }
+        .experiment-metric { text-align: center; padding: 15px; background: #f8f9fa; border-radius: 10px; }
+        .experiment-metric .label { color: #666; font-size: 0.85em; margin-bottom: 5px; }
+        .experiment-metric .value { font-size: 1.3em; font-weight: bold; color: #333; }
+        .attribution { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+        .attribution h4 { color: #333; margin-bottom: 10px; }
+        .attribution-list { list-style: none; padding-left: 0; }
+        .attribution-list li { padding: 8px 0; color: #666; position: relative; padding-left: 20px; }
+        .attribution-list li:before { content: "•"; position: absolute; left: 0; color: #667eea; font-weight: bold; }
+        .warning-section { background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 10px; margin-top: 30px; }
+        .warning-section h3 { color: #856404; margin-bottom: 15px; }
+        .warning-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .warning-item strong { color: #dc3545; }
+        .footer { text-align: center; color: white; padding: 40px 0; opacity: 0.8; }
+        @media (max-width: 768px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .score-breakdown { grid-template-columns: 1fr; }
+            .experiment-metrics { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 智能文案日报</h1>
+            <div class="subtitle">报告日期: 2026-05-12 | 生成时间: 2026-05-13 22:08:51</div>
+        </div>
+        
+        <div class="score-card">
+            <div class="score-header">
+                <div class="score-title">综合评分</div>
+                <div class="score-badge">A - 可执行</div>
+            </div>
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="font-size: 4em; font-weight: bold; color: #667eea;">95</div>
+                <div style="color: #666; margin-top: 10px;">满分 100 分</div>
+            </div>
+            <div class="score-breakdown">
+                <div class="score-item">
+                    <div class="label">核心指标得分</div>
+                    <div class="value">60/60</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">辅助指标得分</div>
+                    <div class="value">20/25</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">过程指标得分</div>
+                    <div class="value">15/15</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="icon">🎯</div>
+                <div class="value">33.3%</div>
+                <div class="label">智能文案覆盖率</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">📦</div>
+                <div class="value">3,924</div>
+                <div class="label">增量订单</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">👥</div>
+                <div class="value">7,741</div>
+                <div class="label">增量用户</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">💰</div>
+                <div class="value">-262,558</div>
+                <div class="label">增量交易额(元)</div>
+            </div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="icon">📊</div>
+                <div class="value">61.3%</div>
+                <div class="label">非AT订单渗透率</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">📈</div>
+                <div class="value">61.4%</div>
+                <div class="label">非AT用户渗透率</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">💵</div>
+                <div class="value">55.7%</div>
+                <div class="label">非AT交易额渗透率</div>
+            </div>
+            <div class="metric-card">
+                <div class="icon">🔄</div>
+                <div class="value">22.33%</div>
+                <div class="label">整体转化率</div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">📋 实验归因报告</h2>
+        
+        <div class="experiment-list">
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 671997026391284</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 周一至高减￥, 今日至高减, PLUS至高减￥</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.16%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">3,626</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">3,729</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">85,877</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 3626 单</li>
+<li>增量交易额 85,877 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 778867300095187</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 算法组, 人工组</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.31%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">1,548</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">1,546</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">2,361,051</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 1548 单</li>
+<li>增量交易额 2,361,051 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 205717888006861</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 今日随机至高减, 周一随机至高减, PLUS</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.03%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">1,482</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">1,321</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">1,184,582</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 1482 单</li>
+<li>增量交易额 1,184,582 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 126779027149009</div>
+                        <div class="experiment-meta">收银台 | 坑位7-小金库 | 周几优惠, 今日随机至高减</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.17%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">757</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">703</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">37,559</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 757 单</li>
+<li>增量交易额 37,559 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 760856177219391</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | MG_5Z1QHFYJ3Z7V, MG_5Z1QHFYJ3Z7S, MG_5Z1QHFYJ3Z7T</div>
+                    </div>
+                    <span class="experiment-badge badge-positive">✅ 正向提升</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+3.54%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">603</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">1,052</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">-2,101,102</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 603 单</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 031982857774172</div>
+                        <div class="experiment-meta">结算页 | 坑位13 | 周几立减, 今日补贴¥</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.03%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">524</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">502</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">737,255</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 524 单</li>
+<li>增量交易额 737,255 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 681378031041901</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 算法组, AB组</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">-0.28%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">443</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">390</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">36,491</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>增量订单贡献 443 单</li>
+<li>增量交易额 36,491 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 925424965477989</div>
+                        <div class="experiment-meta">收银台 | 坑位7 | 周一, plus, 今日</div>
+                    </div>
+                    <span class="experiment-badge badge-positive">✅ 正向提升</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.66%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">167</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">192</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">11,497</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+<li>增量订单贡献 167 单</li>
+<li>增量交易额 11,497 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 788958200748989</div>
+                        <div class="experiment-meta">收银台 | 坑位5 | 算法, 素材AB</div>
+                    </div>
+                    <span class="experiment-badge badge-negative">⚠️ 负向下降</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">-2.32%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">63</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">46</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">21,310</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>增量订单贡献 63 单</li>
+<li>增量交易额 21,310 元</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="experiment-item">
+                <div class="experiment-header">
+                    <div>
+                        <div class="experiment-title">实验 081833919295683</div>
+                        <div class="experiment-meta">结算页 | 坑位13 | 专属立减</div>
+                    </div>
+                    <span class="experiment-badge badge-stable">➖ 稳定</span>
+                </div>
+                <div class="experiment-metrics">
+                    <div class="experiment-metric">
+                        <div class="label">转化率 Δ</div>
+                        <div class="value">+0.11%</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量订单</div>
+                        <div class="value">-19</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量用户</div>
+                        <div class="value">-11</div>
+                    </div>
+                    <div class="experiment-metric">
+                        <div class="label">增量交易额</div>
+                        <div class="value">-150,170</div>
+                    </div>
+                </div>
+                <div class="attribution">
+                    <h4>正向归因</h4>
+                    <ul class="attribution-list">
+                        <li>转化率提升，文案效果优于对照组</li>
+                    </ul>
+                </div>
+            </div>
+
+        <div class="warning-section">
+            <h3>⚠️ 负向实验预警</h3>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 165093975187157</strong> - 【您有优惠可使用】, 【您有专属补贴待使用】<br>
+                    场景: 收银台 | 坑位: 坑位5<br>
+                    增量订单: -103 | 增量交易额: -11,962 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 070075827233913</strong> - 周几随机减, 今日随机减<br>
+                    场景: 结算页 | 坑位: 坑位13<br>
+                    增量订单: -118 | 增量交易额: 33,427 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 175195378701791</strong> - MG_5NUZVU3Y86BO, MG_5NUZVU3Y86BM<br>
+                    场景: 收银台 | 坑位: 坑位7<br>
+                    增量订单: -155 | 增量交易额: 3,238 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 813784615058588</strong> - 周特惠, 周补贴<br>
+                    场景: 收银台 | 坑位: 坑位7<br>
+                    增量订单: -183 | 增量交易额: -494,038 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+                <div class="warning-item">
+                    <strong>⚠️ 实验 489184169598012</strong> - 周几立减, 今日补贴<br>
+                    场景: 收银台 | 坑位: 坑位7-小金库<br>
+                    增量订单: -184 | 增量交易额: -173,194 元<br>
+                    <em>建议: 检查文案适配性，考虑替换或下线</em>
+                </div>
+
+        </div>
+
+        <div class="footer">
+            <p>本报告由 AIC 智能文案分析系统自动生成</p>
+            <p>数据来源: sdm.sdm_jdt_pay_f02_ab_intel_contt_insid_site_indx_i_d</p>
+        </div>
+    </div>
+</body>
+</html>
