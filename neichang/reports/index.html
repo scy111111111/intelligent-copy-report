@@ -3,30 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIC 智能文案报告存档 - 内场</title>
+    <title>AIC 智能文案报告存档 - neichang</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
-        h1 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
-        .report-list { list-style: none; padding: 0; }
-        .report-item { background: white; margin: 10px 0; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .report-item:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-        .report-link { color: #1976D2; text-decoration: none; font-weight: 500; }
-        .report-link:hover { text-decoration: underline; }
-        .report-meta { color: #666; font-size: 14px; }
-        .back-link { display: inline-block; margin-top: 20px; color: #4CAF50; text-decoration: none; }
-        .back-link:hover { text-decoration: underline; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .report-list {
+            list-style: none;
+            padding: 0;
+        }
+        .report-item {
+            background: #f8f9fa;
+            margin: 10px 0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .report-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .report-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .report-link:hover {
+            text-decoration: underline;
+        }
+        .report-meta {
+            color: #999;
+            font-size: 13px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        .back-link:hover {
+            transform: translateY(-2px);
+        }
+        .stats {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .stats strong {
+            color: #1976d2;
+        }
     </style>
 </head>
 <body>
-    <h1>📊 AIC 智能文案报告存档 - 内场</h1>
-    <p>所有历史报告按时间倒序排列</p>
-    <ul class="report-list" id="report-list">
-        <!-- 报告列表将通过脚本动态生成 -->
-    </ul>
-    <a href="../" class="back-link">← 返回最新报告</a>
-    <script>
-        // 动态加载报告列表
-        // 实际部署时会由部署脚本更新
-    </script>
+    <div class="container">
+        <h1>📊 AIC 智能文案报告存档 - neichang</h1>
+        <p class="subtitle">所有历史报告按时间倒序排列</p>
+        <div class="stats">
+            <strong>共 14 份报告</strong> | 最近更新: 2026-05-28 10:46:09
+        </div>
+        <ul class="report-list">
+            
+        <li class="report-item">
+            <a href="sunchenyu8_20260528_104609.html" class="report-link">sunchenyu8_20260528_104609</a>
+            <span class="report-meta">2026-05-28 10:45:50</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260515_164140.html" class="report-link">sunchenyu8_20260515_164140</a>
+            <span class="report-meta">2026-05-15 16:41:40</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260515_162500.html" class="report-link">sunchenyu8_20260515_162500</a>
+            <span class="report-meta">2026-05-15 16:24:50</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260515_161452.html" class="report-link">sunchenyu8_20260515_161452</a>
+            <span class="report-meta">2026-05-15 16:14:53</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260515_160030.html" class="report-link">sunchenyu8_20260515_160030</a>
+            <span class="report-meta">2026-05-15 16:00:31</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260515_155617.html" class="report-link">sunchenyu8_20260515_155617</a>
+            <span class="report-meta">2026-05-15 15:56:18</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260515_152955.html" class="report-link">sunchenyu8_20260515_152955</a>
+            <span class="report-meta">2026-05-15 15:29:56</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260515_120843.html" class="report-link">sunchenyu8_20260515_120843</a>
+            <span class="report-meta">2026-05-15 12:08:44</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260514_165000.html" class="report-link">sunchenyu8_20260514_165000</a>
+            <span class="report-meta">2026-05-14 16:49:19</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260514_163556.html" class="report-link">sunchenyu8_20260514_163556</a>
+            <span class="report-meta">2026-05-14 16:35:57</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260514_162837.html" class="report-link">sunchenyu8_20260514_162837</a>
+            <span class="report-meta">2026-05-14 16:28:38</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260514_155835.html" class="report-link">sunchenyu8_20260514_155835</a>
+            <span class="report-meta">2026-05-14 15:58:37</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260514_144500.html" class="report-link">sunchenyu8_20260514_144500</a>
+            <span class="report-meta">2026-05-14 14:43:25</span>
+        </li>
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260513_222703.html" class="report-link">sunchenyu8_20260513_222703</a>
+            <span class="report-meta">2026-05-13 22:27:03</span>
+        </li>
+        </ul>
+        <a href="../" class="back-link">← 返回最新报告</a>
+    </div>
 </body>
 </html>
