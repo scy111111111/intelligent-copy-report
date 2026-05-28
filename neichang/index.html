@@ -57,14 +57,14 @@
         }
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
             margin-bottom: 20px;
         }
         .metric-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 24px;
+            padding: 20px;
             border-radius: 12px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
@@ -77,18 +77,22 @@
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
         }
+        .metric-card.info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
         .metric-value {
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: bold;
             margin-bottom: 8px;
         }
         .metric-label {
-            font-size: 0.95em;
+            font-size: 0.9em;
             opacity: 0.9;
         }
         .metric-change {
             margin-top: 8px;
-            font-size: 0.85em;
+            font-size: 0.8em;
             padding: 4px 12px;
             background: rgba(255,255,255,0.2);
             border-radius: 20px;
@@ -244,12 +248,23 @@
             color: #856404;
             margin-bottom: 10px;
         }
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            margin: 30px 0;
+            border-radius: 2px;
+        }
+        .data-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.8em;
             }
             .metric-value {
-                font-size: 2em;
+                font-size: 1.8em;
             }
             .chart-container {
                 height: 300px;
@@ -268,6 +283,9 @@
         <!-- 核心指标总览 -->
         <div class="card">
             <h2 class="card-title">📊 核心指标总览</h2>
+            
+            <!-- 增量指标 -->
+            <h3 style="margin-bottom: 15px; color: #11998e;">📈 增量效果（实验组 vs 对照组）</h3>
             <div class="metrics-grid">
                 <div class="metric-card positive">
                     <div class="metric-value">+24.1万</div>
@@ -290,6 +308,70 @@
                     <div class="metric-change">有实验数据的坑位数</div>
                 </div>
             </div>
+            
+            <div class="section-divider"></div>
+            
+            <!-- 总量指标 -->
+            <h3 style="margin-bottom: 15px; color: #667eea;">📦 实验总量数据</h3>
+            <div class="metrics-grid">
+                <div class="metric-card info">
+                    <div class="metric-value">5,937万</div>
+                    <div class="metric-label">总订单数</div>
+                    <div class="metric-change">实验组订单总量</div>
+                </div>
+                <div class="metric-card info">
+                    <div class="metric-value">2.70亿</div>
+                    <div class="metric-label">总UV</div>
+                    <div class="metric-change">实验组曝光UV总量</div>
+                </div>
+                <div class="metric-card info">
+                    <div class="metric-value">134.5亿</div>
+                    <div class="metric-label">总交易额</div>
+                    <div class="metric-change">实验组交易额总量</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">958亿</div>
+                    <div class="metric-label">大盘订单</div>
+                    <div class="metric-change">场景大盘订单总量</div>
+                </div>
+            </div>
+            
+            <div class="section-divider"></div>
+            
+            <!-- 渗透率指标 -->
+            <h3 style="margin-bottom: 15px; color: #764ba2;">📊 渗透率指标</h3>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">0.62%</div>
+                    <div class="metric-label">订单渗透率</div>
+                    <div class="metric-change">增量订单 / 大盘订单</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0.40%</div>
+                    <div class="metric-label">UV渗透率</div>
+                    <div class="metric-change">增量UV / 大盘UV</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0.26%</div>
+                    <div class="metric-label">交易额渗透率</div>
+                    <div class="metric-change">增量交易额 / 大盘交易额</div>
+                </div>
+                <div class="metric-card positive">
+                    <div class="metric-value">0.41%</div>
+                    <div class="metric-label">订单增量贡献率</div>
+                    <div class="metric-change">增量订单 / 实验组总订单</div>
+                </div>
+            </div>
+            
+            <div class="highlight-box" style="background: #d4edda; border-color: #28a745;">
+                <h4 style="color: #155724;">💡 渗透率说明</h4>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li><strong>订单渗透率</strong>：增量订单占大盘订单的比例，反映文案对大盘订单的贡献程度</li>
+                    <li><strong>UV渗透率</strong>：增量UV占大盘UV的比例，反映文案对用户转化的影响</li>
+                    <li><strong>交易额渗透率</strong>：增量交易额占大盘交易额的比例，反映文案对交易额的贡献</li>
+                    <li><strong>订单增量贡献率</strong>：增量订单占实验组总订单的比例，反映实验效果强度</li>
+                </ul>
+            </div>
         </div>
 
         <!-- 场景×坑位分布 -->
@@ -300,10 +382,13 @@
                     <tr>
                         <th>场景</th>
                         <th>坑位</th>
+                        <th>总订单</th>
+                        <th>总UV</th>
+                        <th>总交易额</th>
                         <th>增量订单</th>
                         <th>增量UV</th>
                         <th>增量交易额</th>
-                        <th>订单占比</th>
+                        <th>订单渗透率</th>
                         <th>效果评估</th>
                     </tr>
                 </thead>
@@ -311,46 +396,61 @@
                     <tr>
                         <td>收银台</td>
                         <td>坑位7</td>
-                        <td class="positive-value">+223,005</td>
-                        <td class="positive-value">+241,870</td>
+                        <td>2,603万</td>
+                        <td>2,968万</td>
+                        <td>50.9亿</td>
+                        <td class="positive-value">+22.3万</td>
+                        <td class="positive-value">+24.2万</td>
                         <td class="positive-value">+6,073万</td>
-                        <td><strong>92.4%</strong></td>
+                        <td><strong>0.56%</strong></td>
                         <td><span class="tag tag-success">核心主力</span></td>
                     </tr>
                     <tr>
                         <td>结算页</td>
                         <td>坑位7</td>
-                        <td class="positive-value">+12,451</td>
-                        <td class="positive-value">+20,794</td>
+                        <td>736万</td>
+                        <td>1.25亿</td>
+                        <td>20.1亿</td>
+                        <td class="positive-value">+1.2万</td>
+                        <td class="positive-value">+2.1万</td>
                         <td class="negative-value">-711万</td>
-                        <td>5.2%</td>
+                        <td>0.03%</td>
                         <td><span class="tag tag-warning">订单正向/交易额负向</span></td>
                     </tr>
                     <tr>
                         <td>结算页</td>
                         <td>坑位13</td>
+                        <td>453万</td>
+                        <td>9,100万</td>
+                        <td>11.8亿</td>
                         <td class="positive-value">+3,523</td>
                         <td class="positive-value">+3,680</td>
                         <td class="negative-value">-220万</td>
-                        <td>1.5%</td>
+                        <td>0.08%</td>
                         <td><span class="tag tag-warning">订单正向/交易额负向</span></td>
                     </tr>
                     <tr>
                         <td>收银台</td>
                         <td>坑位7-小金库</td>
+                        <td>2,074万</td>
+                        <td>2,247万</td>
+                        <td>51.1亿</td>
                         <td class="positive-value">+2,261</td>
                         <td class="positive-value">+2,288</td>
                         <td class="negative-value">-975万</td>
-                        <td>0.9%</td>
+                        <td>0.07%</td>
                         <td><span class="tag tag-warning">订单正向/交易额负向</span></td>
                     </tr>
                     <tr>
                         <td>收银台</td>
                         <td>坑位5</td>
+                        <td>70万</td>
+                        <td>107万</td>
+                        <td>5,746万</td>
                         <td class="positive-value">+145</td>
                         <td class="positive-value">+1,087</td>
                         <td class="negative-value">-7.2万</td>
-                        <td>0.06%</td>
+                        <td>0.002%</td>
                         <td><span class="tag tag-info">效果微弱</span></td>
                     </tr>
                 </tbody>
@@ -359,9 +459,9 @@
             <div class="highlight-box">
                 <h4>💡 关键发现</h4>
                 <ul>
-                    <li><strong>收银台-坑位7</strong>是绝对主力，贡献92.4%的增量订单和全部正向交易额</li>
+                    <li><strong>收银台-坑位7</strong>是绝对主力，贡献92.4%的增量订单和全部正向交易额，订单渗透率0.56%</li>
                     <li><strong>结算页场景</strong>虽然订单增量正向，但交易额均为负向，需关注客单价影响</li>
-                    <li><strong>收银台-坑位5</strong>效果微弱，建议评估是否继续投放</li>
+                    <li><strong>收银台-坑位5</strong>效果微弱，订单渗透率仅0.002%，建议评估是否继续投放</li>
                 </ul>
             </div>
         </div>
@@ -382,9 +482,10 @@
                 <div class="summary-box">
                     <h3>📌 收银台-坑位7 概况</h3>
                     <ul>
-                        <li>增量订单：<strong>+223,005</strong>（占比92.4%）</li>
-                        <li>增量UV：<strong>+241,870</strong></li>
-                        <li>增量交易额：<strong>+6,073万</strong></li>
+                        <li>总订单：<strong>2,603万</strong> | 总UV：<strong>2,968万</strong> | 总交易额：<strong>50.9亿</strong></li>
+                        <li>增量订单：<strong>+22.3万</strong>（占比92.4%）| 订单渗透率：<strong>0.56%</strong></li>
+                        <li>增量UV：<strong>+24.2万</strong> | UV渗透率：<strong>0.09%</strong></li>
+                        <li>增量交易额：<strong>+6,073万</strong> | 交易额渗透率：<strong>0.09%</strong></li>
                         <li>文案数量：35条实验文案</li>
                     </ul>
                 </div>
@@ -551,9 +652,10 @@
                 <div class="summary-box">
                     <h3>📌 结算页-坑位7 概况</h3>
                     <ul>
-                        <li>增量订单：<strong>+12,451</strong>（占比5.2%）</li>
-                        <li>增量UV：<strong>+20,794</strong></li>
-                        <li>增量交易额：<strong class="negative-value">-711万</strong>（负向）</li>
+                        <li>总订单：<strong>736万</strong> | 总UV：<strong>1.25亿</strong> | 总交易额：<strong>20.1亿</strong></li>
+                        <li>增量订单：<strong>+1.2万</strong>（占比5.2%）| 订单渗透率：<strong>0.03%</strong></li>
+                        <li>增量UV：<strong>+2.1万</strong> | UV渗透率：<strong>0.07%</strong></li>
+                        <li>增量交易额：<strong class="negative-value">-711万</strong>（负向）| 交易额渗透率：<strong>-0.35%</strong></li>
                         <li>文案数量：35条实验文案</li>
                     </ul>
                 </div>
@@ -634,9 +736,10 @@
                 <div class="summary-box">
                     <h3>📌 结算页-坑位13 概况</h3>
                     <ul>
-                        <li>增量订单：<strong>+3,523</strong>（占比1.5%）</li>
-                        <li>增量UV：<strong>+3,680</strong></li>
-                        <li>增量交易额：<strong class="negative-value">-220万</strong>（负向）</li>
+                        <li>总订单：<strong>453万</strong> | 总UV：<strong>9,100万</strong> | 总交易额：<strong>11.8亿</strong></li>
+                        <li>增量订单：<strong>+3,523</strong>（占比1.5%）| 订单渗透率：<strong>0.08%</strong></li>
+                        <li>增量UV：<strong>+3,680</strong> | UV渗透率：<strong>0.12%</strong></li>
+                        <li>增量交易额：<strong class="negative-value">-220万</strong>（负向）| 交易额渗透率：<strong>-0.29%</strong></li>
                         <li>文案数量：5条实验文案</li>
                     </ul>
                 </div>
@@ -733,9 +836,10 @@
                 <div class="summary-box">
                     <h3>📌 收银台-坑位7-小金库 概况</h3>
                     <ul>
-                        <li>增量订单：<strong>+2,261</strong>（占比0.9%）</li>
-                        <li>增量UV：<strong>+2,288</strong></li>
-                        <li>增量交易额：<strong class="negative-value">-975万</strong>（负向）</li>
+                        <li>总订单：<strong>2,074万</strong> | 总UV：<strong>2,247万</strong> | 总交易额：<strong>51.1亿</strong></li>
+                        <li>增量订单：<strong>+2,261</strong>（占比0.9%）| 订单渗透率：<strong>0.07%</strong></li>
+                        <li>增量UV：<strong>+2,288</strong> | UV渗透率：<strong>0.10%</strong></li>
+                        <li>增量交易额：<strong class="negative-value">-975万</strong>（负向）| 交易额渗透率：<strong>-0.17%</strong></li>
                         <li>文案数量：4条实验文案</li>
                     </ul>
                 </div>
@@ -822,9 +926,10 @@
                 <div class="summary-box">
                     <h3>📌 收银台-坑位5 概况</h3>
                     <ul>
-                        <li>增量订单：<strong>+145</strong>（占比0.06%）</li>
-                        <li>增量UV：<strong>+1,087</strong></li>
-                        <li>增量交易额：<strong class="negative-value">-7.2万</strong>（负向）</li>
+                        <li>总订单：<strong>70万</strong> | 总UV：<strong>107万</strong> | 总交易额：<strong>5,746万</strong></li>
+                        <li>增量订单：<strong>+145</strong>（占比0.06%）| 订单渗透率：<strong>0.002%</strong></li>
+                        <li>增量UV：<strong>+1,087</strong> | UV渗透率：<strong>0.02%</strong></li>
+                        <li>增量交易额：<strong class="negative-value">-7.2万</strong>（负向）| 交易额渗透率：<strong>-0.006%</strong></li>
                         <li>文案数量：8条实验文案</li>
                     </ul>
                 </div>
@@ -876,7 +981,7 @@
                 </table>
                 <div class="highlight-box">
                     <h4>⚠️ 坑位评估建议</h4>
-                    <p>收银台-坑位5整体效果微弱，除算法和素材AB外，其他文案均为负向。建议评估该坑位的投放价值，或优化文案策略。</p>
+                    <p>收银台-坑位5整体效果微弱，订单渗透率仅0.002%，除算法和素材AB外，其他文案均为负向。建议评估该坑位的投放价值，或优化文案策略。</p>
                 </div>
             </div>
         </div>
@@ -1020,11 +1125,12 @@
             <div class="highlight-box" style="background: #d4edda; border-color: #28a745;">
                 <h4 style="color: #155724;">✅ 核心结论</h4>
                 <ol style="margin-left: 20px; line-height: 1.8;">
-                    <li><strong>主力坑位明确：</strong>收银台-坑位7贡献92.4%增量，是核心优化对象</li>
+                    <li><strong>主力坑位明确：</strong>收银台-坑位7贡献92.4%增量，订单渗透率0.56%，是核心优化对象</li>
                     <li><strong>头部文案集中：</strong>今日补贴、周一至高减￥两个文案贡献65%+增量</li>
                     <li><strong>文案效果场景依赖性强：</strong>同一文案在不同场景-坑位效果差异巨大，需差异化配置</li>
                     <li><strong>算法组表现分化：</strong>增量订单正向但交易额负向，需深入分析原因</li>
                     <li><strong>结算页场景需优化：</strong>订单正向但交易额负向，需关注客单价影响</li>
+                    <li><strong>渗透率表现：</strong>整体订单渗透率0.62%，UV渗透率0.40%，交易额渗透率0.26%</li>
                 </ol>
             </div>
         </div>
