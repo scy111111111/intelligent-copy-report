@@ -2,97 +2,34 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIC 智能文案报告存档 - neichang</title>
+    <title>AIC报告归档</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #333; text-align: center; }
+        .report-list { list-style: none; padding: 0; }
+        .report-item { 
+            background: white; 
+            margin: 10px 0; 
+            padding: 15px; 
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .container {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        h1 {
-            color: #333;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .subtitle {
-            color: #666;
-            margin-bottom: 20px;
-        }
-        .report-list {
-            list-style: none;
-            padding: 0;
-        }
-        .report-item {
-            background: #f8f9fa;
-            margin: 10px 0;
-            padding: 15px 20px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .report-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .report-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .report-link:hover {
-            text-decoration: underline;
-        }
-        .report-meta {
-            color: #999;
-            font-size: 13px;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: transform 0.2s;
-        }
-        .back-link:hover {
-            transform: translateY(-2px);
-        }
-        .stats {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .stats strong {
-            color: #1976d2;
-        }
+        .report-link { color: #0066cc; text-decoration: none; font-weight: bold; }
+        .report-link:hover { text-decoration: underline; }
+        .report-meta { color: #666; font-size: 12px; float: right; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📊 AIC 智能文案报告存档 - neichang</h1>
-        <p class="subtitle">所有历史报告按时间倒序排列</p>
-        <div class="stats">
-            <strong>共 14 份报告</strong> | 最近更新: 2026-05-28 10:46:09
-        </div>
+        <h1>AIC智能文案分析报告归档</h1>
         <ul class="report-list">
-            
+
+        <li class="report-item">
+            <a href="sunchenyu8_20260528_185831.html" class="report-link">sunchenyu8_20260528_185831</a>
+            <span class="report-meta">2026-05-28 18:58:30</span>
+        </li>
+
         <li class="report-item">
             <a href="sunchenyu8_20260528_104609.html" class="report-link">sunchenyu8_20260528_104609</a>
             <span class="report-meta">2026-05-28 10:45:50</span>
@@ -163,7 +100,6 @@
             <span class="report-meta">2026-05-13 22:27:03</span>
         </li>
         </ul>
-        <a href="../" class="back-link">← 返回最新报告</a>
     </div>
 </body>
 </html>
