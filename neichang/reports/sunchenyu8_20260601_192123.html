@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能文案实验效果分析报告 | 2026-05-20 ~ 2026-05-31 (12天)</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --positive-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: white;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: #eee;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --card-bg: #1e1e2e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #3a3a4a;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .header .date-range {
+            margin-top: 10px;
+            font-size: 1em;
+            opacity: 0.8;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-card.positive {
+            background: var(--positive-gradient);
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .metric-card.warning {
+            background: var(--warning-gradient);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .metric-card.info {
+            background: var(--info-gradient);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .metric-change {
+            margin-top: 8px;
+            font-size: 0.8em;
+            padding: 4px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .chart-container {
+            height: 480px; /* 增加趋势分析占比 30% */
+            margin-top: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        th {
+            background: rgba(102, 126, 234, 0.1);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .positive-value {
+            color: #11998e;
+            font-weight: 600;
+        }
+
+        .negative-value {
+            color: #f5576c;
+            font-weight: 600;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .tag-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .tag-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .tag-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .tag-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .strategy-section {
+            margin-top: 20px;
+        }
+
+        .strategy-item {
+            background: rgba(102, 126, 234, 0.05);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .strategy-item.increase {
+            border-left-color: #11998e;
+            background: rgba(17, 153, 142, 0.1);
+        }
+
+        .strategy-item.decrease {
+            border-left-color: #f5576c;
+            background: rgba(245, 87, 108, 0.1);
+        }
+
+        .strategy-item.watch {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .strategy-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .strategy-detail {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .highlight-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 15px 0;
+        }
+
+        .highlight-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: var(--primary-gradient);
+            margin: 30px 0;
+            border-radius: 2px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .card {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .metric-value {
+                font-size: 1.8em;
+            }
+            .chart-container {
+                height: 300px;
+            }
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 新增样式：排名徽章 */
+        .ranking-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .ranking-badge.gold { background: linear-gradient(135deg, #FFD700, #FFA500); color: white; }
+        .ranking-badge.silver { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: white; }
+        .ranking-badge.bronze { background: linear-gradient(135deg, #CD7F32, #8B4513); color: white; }
+        
+        /* 坑位Tab样式 */
+        .kw-tabs-container {
+            margin: 20px 0;
+        }
+        
+        .kw-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .kw-tabs .tab-btn {
+            padding: 10px 24px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .kw-tabs .tab-btn:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+        
+        .kw-tabs .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .kw-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .kw-tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .feature-card { background: rgba(102, 126, 234, 0.05); padding: 20px; border-radius: 12px; border-left: 4px solid #667eea; }
+        .feature-card h3 { color: var(--text-primary); margin-bottom: 12px; }
+        .feature-card ul { list-style: none; padding: 0; }
+        .feature-card li { padding: 6px 0; color: var(--text-secondary); }
+        .recommendation-list { margin-top: 20px; }
+        .recommendation-item { background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05)); padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #667eea; }
+        .rec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .rec-score { font-size: 1.2em; font-weight: bold; color: #11998e; }
+        .rec-tag { padding: 6px 16px; background: linear-gradient(135deg, #11998e, #38ef7d); color: white; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .rec-content { margin-top: 8px; }
+        .rec-content p { margin: 8px 0; color: var(--text-primary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 智能文案实验效果分析报告</h1>
+            <div class="subtitle">内场文案AB实验归因分析与策略建议</div>
+            <div class="date-range">📅 数据周期：2026-05-20 ~ 2026-05-31 (12天)</div>
+        </div>
+
+        <!-- 核心指标总览 -->
+        <div class="card">
+            <h2 class="card-title">📊 核心指标总览</h2>
+            
+            <!-- 增量指标 -->
+            <h3 style="margin-bottom: 15px; color: #11998e;">📈 增量效果（实验组 vs 对照组）</h3>
+            <div class="metrics-grid">
+                <div class="metric-card positive" onclick="showTrendChart('inc_order')">
+                    <div class="metric-value">+7.36万</div>
+                    <div class="metric-label">增量订单</div>
+                    <div class="metric-change">点击查看趋势 📈</div>
+                </div>
+                <div class="metric-card positive" onclick="showTrendChart('inc_uv')">
+                    <div class="metric-value">+7.40万</div>
+                    <div class="metric-label">增量UV</div>
+                    <div class="metric-change">点击查看趋势 📈</div>
+                </div>
+                <div class="metric-card positive" onclick="showTrendChart('inc_trade')">
+                    <div class="metric-value">-324.60万</div>
+                    <div class="metric-label">增量交易额</div>
+                    <div class="metric-change">点击查看趋势 📈</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">4</div>
+                    <div class="metric-label">活跃场景-坑位</div>
+                    <div class="metric-change">有实验数据的坑位数</div>
+                </div>
+            </div>
+            
+            <div class="section-divider"></div>
+            
+            <!-- 总量指标 -->
+            <h3 style="margin-bottom: 15px; color: #667eea;">📦 实验总量数据</h3>
+            <div class="metrics-grid">
+                <div class="metric-card info">
+                    <div class="metric-value">5.01亿</div>
+                    <div class="metric-label">总订单数</div>
+                    <div class="metric-change">实验组订单总量</div>
+                </div>
+                <div class="metric-card info">
+                    <div class="metric-value">3.49亿</div>
+                    <div class="metric-label">总UV</div>
+                    <div class="metric-change">实验组曝光UV总量</div>
+                </div>
+                <div class="metric-card info">
+                    <div class="metric-value">852.51亿</div>
+                    <div class="metric-label">总交易额</div>
+                    <div class="metric-change">实验组交易额总量</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">5.01亿</div>
+                    <div class="metric-label">大盘订单</div>
+                    <div class="metric-change">场景大盘订单总量</div>
+                </div>
+            </div>
+            
+            <div class="section-divider"></div>
+            
+            <!-- 渗透率指标 -->
+            <h3 style="margin-bottom: 15px; color: #764ba2;">📊 渗透率指标</h3>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">0.0147%</div>
+                    <div class="metric-label">订单渗透率</div>
+                    <div class="metric-change">增量订单 / 大盘订单</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0.0212%</div>
+                    <div class="metric-label">UV渗透率</div>
+                    <div class="metric-change">增量UV / 大盘UV</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">-0.0038%</div>
+                    <div class="metric-label">交易额渗透率</div>
+                    <div class="metric-change">增量交易额 / 大盘交易额</div>
+                </div>
+                <div class="metric-card positive">
+                    <div class="metric-value">0.0147%</div>
+                    <div class="metric-label">订单增量贡献率</div>
+                    <div class="metric-change">增量订单 / 实验组总订单</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 趋势图表 -->
+        <div class="card" id="trendSection">
+            <h2 class="card-title">📈 趋势分析</h2>
+            
+            <div class="charts-row">
+                <div class="chart-container" id="orderTrendChart"></div>
+                <div class="chart-container" id="uvTrendChart"></div>
+            </div>
+            
+            <div class="charts-row">
+                <div class="chart-container" id="tradeTrendChart"></div>
+                <div class="chart-container" id="penRateChart"></div>
+            </div>
+        </div>
+
+        <!-- 对比分析 -->
+        <div class="card">
+            <h2 class="card-title">📊 对比分析</h2>
+            
+            <div class="charts-row">
+                <div class="chart-container" id="sceneCompareChart"></div>
+                <div class="chart-container" id="kwNameCompareChart"></div>
+            </div>
+        </div>
+
+        <!-- 场景×坑位分布 -->
+        <div class="card">
+            <h2 class="card-title">🏪 场景×坑位效果分布</h2>
+            
+            <!-- 坑位Tab切换 -->
+            <div class="kw-tabs-container">
+                <div class="kw-tabs">
+                    <button class="tab-btn active" data-kw="坑位7" onclick="switchKwTab('坑位7')">坑位7</button>
+<button class="tab-btn" data-kw="坑位7-小金库" onclick="switchKwTab('坑位7-小金库')">坑位7-小金库</button>
+<button class="tab-btn" data-kw="坑位13" onclick="switchKwTab('坑位13')">坑位13</button>
+<button class="tab-btn" data-kw="坑位5" onclick="switchKwTab('坑位5')">坑位5</button>
+<button class="tab-btn" data-kw="坑位18" onclick="switchKwTab('坑位18')">坑位18</button>
+<button class="tab-btn" data-kw="坑位15" onclick="switchKwTab('坑位15')">坑位15</button>
+<button class="tab-btn" data-kw="坑位14" onclick="switchKwTab('坑位14')">坑位14</button>
+
+                </div>
+            </div>
+            
+            <!-- 各坑位内容 -->
+            
+<div class="kw-tab-content active" id="kw-tab-坑位7">
+    <h3 style="margin-bottom:15px;">📍 坑位7 <span class="tag tag-info">命中场景：收银台/结算页</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+6.85万</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 93.04%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+6.90万</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0197%</div>
+        </div>
+        <div class="metric-card warning">
+            <div class="metric-value">-308.81万</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 -0.0036%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0137%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+6.85万</td><td>5.01亿</td><td>0.0137%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+6.90万</td><td>3.49亿</td><td>0.0197%</td></tr>
+            <tr><td>交易额</td><td class="negative-value">-308.81万</td><td>852.51亿</td><td>-0.0036%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位7-小金库">
+    <h3 style="margin-bottom:15px;">📍 坑位7-小金库 <span class="tag tag-info">命中场景：收银台</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+2,600</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 3.53%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+2,315</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0007%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+355.45万</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0042%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0005%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+2,600</td><td>5.01亿</td><td>0.0005%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+2,315</td><td>3.49亿</td><td>0.0007%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+355.45万</td><td>852.51亿</td><td>0.0042%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位13">
+    <h3 style="margin-bottom:15px;">📍 坑位13 <span class="tag tag-info">命中场景：结算页</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+2,249</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 3.06%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+2,588</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0007%</div>
+        </div>
+        <div class="metric-card warning">
+            <div class="metric-value">-388.07万</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 -0.0046%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0004%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+2,249</td><td>5.01亿</td><td>0.0004%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+2,588</td><td>3.49亿</td><td>0.0007%</td></tr>
+            <tr><td>交易额</td><td class="negative-value">-388.07万</td><td>852.51亿</td><td>-0.0046%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位5">
+    <h3 style="margin-bottom:15px;">📍 坑位5 <span class="tag tag-info">命中场景：收银台</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+268</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 0.36%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+182</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0001%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+16.82万</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0002%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0001%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+268</td><td>5.01亿</td><td>0.0001%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+182</td><td>3.49亿</td><td>0.0001%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+16.82万</td><td>852.51亿</td><td>0.0002%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位18">
+    <h3 style="margin-bottom:15px;">📍 坑位18 <span class="tag tag-info">命中场景：收银台/结算页</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 0.00%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0000%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+0</td><td>5.01亿</td><td>0.0000%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+0</td><td>3.49亿</td><td>0.0000%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+0</td><td>852.51亿</td><td>0.0000%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位15">
+    <h3 style="margin-bottom:15px;">📍 坑位15 <span class="tag tag-info">命中场景：收银台</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 0.00%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0000%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+0</td><td>5.01亿</td><td>0.0000%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+0</td><td>3.49亿</td><td>0.0000%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+0</td><td>852.51亿</td><td>0.0000%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位14">
+    <h3 style="margin-bottom:15px;">📍 坑位14 <span class="tag tag-info">命中场景：结算页</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 0.00%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0000%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+0</td><td>5.01亿</td><td>0.0000%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+0</td><td>3.49亿</td><td>0.0000%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+0</td><td>852.51亿</td><td>0.0000%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+            
+            <div class="highlight-box">
+                <h4>🔍 关键发现</h4>
+                <ul><li><strong>坑位7</strong> 是订单贡献最大坑位，跨场景 SUM 增量 +68,451 单，订单占比 <strong>93.04%</strong>，覆盖收银台/结算页双场景</li>
+<li><strong>坑位7-小金库</strong> 仅在收银台命中，但 GMV 表现最好：+355.45万元（唯一显著正向 GMV）</li>
+<li><strong>坑位13</strong>（结算页）订单 +2,249 但 GMV -388.07万，存在低客单/退单风险</li>
+<li>有 <strong>3 个坑位</strong>（坑位18/15/14）静默无增量，建议核查曝光/算法配置</li>
+<li>整体跨场景增量：订单 +73,555，UV +74,030，GMV -324.60万；订单渗透率 0.0147%</li></ul>
+            </div>
+        </div>
+
+        <!-- 各坑位文案效果明细 -->
+        <div class="card">
+            <h2 class="card-title">📋 各坑位文案效果明细</h2>
+            
+<div class="kw-tab-content active" id="kw-tab-坑位7">
+    <h3 style="margin-bottom:15px;">📍 坑位7 <span class="tag tag-info">命中场景：收银台/结算页</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+6.85万</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 93.04%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+6.90万</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0197%</div>
+        </div>
+        <div class="metric-card warning">
+            <div class="metric-value">-308.81万</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 -0.0036%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0137%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+6.85万</td><td>5.01亿</td><td>0.0137%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+6.90万</td><td>3.49亿</td><td>0.0197%</td></tr>
+            <tr><td>交易额</td><td class="negative-value">-308.81万</td><td>852.51亿</td><td>-0.0036%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位7-小金库">
+    <h3 style="margin-bottom:15px;">📍 坑位7-小金库 <span class="tag tag-info">命中场景：收银台</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+2,600</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 3.53%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+2,315</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0007%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+355.45万</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0042%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0005%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+2,600</td><td>5.01亿</td><td>0.0005%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+2,315</td><td>3.49亿</td><td>0.0007%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+355.45万</td><td>852.51亿</td><td>0.0042%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位13">
+    <h3 style="margin-bottom:15px;">📍 坑位13 <span class="tag tag-info">命中场景：结算页</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+2,249</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 3.06%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+2,588</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0007%</div>
+        </div>
+        <div class="metric-card warning">
+            <div class="metric-value">-388.07万</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 -0.0046%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0004%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+2,249</td><td>5.01亿</td><td>0.0004%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+2,588</td><td>3.49亿</td><td>0.0007%</td></tr>
+            <tr><td>交易额</td><td class="negative-value">-388.07万</td><td>852.51亿</td><td>-0.0046%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位5">
+    <h3 style="margin-bottom:15px;">📍 坑位5 <span class="tag tag-info">命中场景：收银台</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+268</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 0.36%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+182</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0001%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+16.82万</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0002%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0001%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+268</td><td>5.01亿</td><td>0.0001%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+182</td><td>3.49亿</td><td>0.0001%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+16.82万</td><td>852.51亿</td><td>0.0002%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位18">
+    <h3 style="margin-bottom:15px;">📍 坑位18 <span class="tag tag-info">命中场景：收银台/结算页</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 0.00%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0000%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+0</td><td>5.01亿</td><td>0.0000%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+0</td><td>3.49亿</td><td>0.0000%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+0</td><td>852.51亿</td><td>0.0000%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位15">
+    <h3 style="margin-bottom:15px;">📍 坑位15 <span class="tag tag-info">命中场景：收银台</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 0.00%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0000%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+0</td><td>5.01亿</td><td>0.0000%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+0</td><td>3.49亿</td><td>0.0000%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+0</td><td>852.51亿</td><td>0.0000%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="kw-tab-content" id="kw-tab-坑位14">
+    <h3 style="margin-bottom:15px;">📍 坑位14 <span class="tag tag-info">命中场景：结算页</span></h3>
+    <div class="metrics-grid">
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量订单（跨场景SUM）</div>
+            <div class="metric-change">订单占比 0.00%</div>
+        </div>
+        <div class="metric-card info">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量UV（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card positive">
+            <div class="metric-value">+0</div>
+            <div class="metric-label">增量交易额（跨场景SUM）</div>
+            <div class="metric-change">渗透率 0.0000%</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">0.0000%</div>
+            <div class="metric-label">订单渗透率</div>
+            <div class="metric-change">基于全大盘订单</div>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>指标</th><th>增量值</th><th>大盘值</th><th>渗透率</th></tr></thead>
+        <tbody>
+            <tr><td>订单</td><td class="positive-value">+0</td><td>5.01亿</td><td>0.0000%</td></tr>
+            <tr><td>UV</td><td class="positive-value">+0</td><td>3.49亿</td><td>0.0000%</td></tr>
+            <tr><td>交易额</td><td class="positive-value">+0</td><td>852.51亿</td><td>0.0000%</td></tr>
+        </tbody>
+    </table>
+</div>
+
+        </div>
+
+        <!-- 策略建议 -->
+
+        <!-- 实验效果TOP榜 -->
+        <div class="card">
+            <h2 class="card-title">🏆 实验效果TOP榜</h2>
+            <div style="overflow-x: auto;">
+                <table id="experimentRankingTable">
+                    <thead><tr><th>排名</th><th>场景</th><th>坑位</th><th>res_code</th><th>ab_id</th><th>实验名称</th><th>增量订单</th><th>增量UV</th><th>增量GMV(元)</th><th>订单渗透率</th><th>稳定性</th><th>综合评分</th></tr></thead>
+                    <tbody id="rankingTableBody"><tr>
+        <td><span class="ranking-badge gold">🥇 1</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">757240992757051</code></td>
+        <td>今日补贴</td>
+        <td class="positive-value">+6.77万</td>
+        <td class="positive-value">+8.38万</td>
+        <td class="positive-value">+5,467.79万</td>
+        <td>0.0135%</td>
+        <td><span class="tag tag-success">双正向</span></td>
+        <td><strong>95</strong></td>
+    </tr>
+<tr>
+        <td><span class="ranking-badge silver">🥈 2</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715614185576837120</code></td>
+        <td><code style="font-size:11px">671997026391284</code></td>
+        <td>周一至高减￥</td>
+        <td class="positive-value">+3.10万</td>
+        <td class="positive-value">+3.13万</td>
+        <td class="positive-value">+100.75万</td>
+        <td>0.0062%</td>
+        <td><span class="tag tag-success">双正向</span></td>
+        <td><strong>95</strong></td>
+    </tr>
+<tr>
+        <td><span class="ranking-badge bronze">🥉 3</span></td>
+        <td><span class="tag tag-info">结算页</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715614185576837120</code></td>
+        <td><code style="font-size:11px">671997026391284</code></td>
+        <td>周一至高减￥</td>
+        <td class="positive-value">+9,253</td>
+        <td class="positive-value">+9,250</td>
+        <td class="positive-value">+24.85万</td>
+        <td>0.0018%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#4</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">230393725023770</code></td>
+        <td>算法组</td>
+        <td class="positive-value">+7,898</td>
+        <td class="positive-value">+8,085</td>
+        <td class="negative-value">-476.80万</td>
+        <td>0.0016%</td>
+        <td><span class="tag tag-warning">订单提升</span></td>
+        <td><strong>65</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#5</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715614864481173504</code></td>
+        <td><code style="font-size:11px">205717888006861</code></td>
+        <td>周一随机至高减</td>
+        <td class="positive-value">+6,772</td>
+        <td class="positive-value">+4,916</td>
+        <td class="positive-value">+143.09万</td>
+        <td>0.0014%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#6</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">230393725023770</code></td>
+        <td>人工组</td>
+        <td class="positive-value">+4,728</td>
+        <td class="positive-value">+5,189</td>
+        <td class="negative-value">-55.76万</td>
+        <td>0.0009%</td>
+        <td><span class="tag tag-warning">订单提升</span></td>
+        <td><strong>65</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#7</span></td>
+        <td><span class="tag tag-info">结算页</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">230393725023770</code></td>
+        <td>算法组</td>
+        <td class="positive-value">+2,352</td>
+        <td class="positive-value">+2,921</td>
+        <td class="positive-value">+113.18万</td>
+        <td>0.0005%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#8</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7-小金库</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_783705039418613760</code></td>
+        <td><code style="font-size:11px">126779027149009</code></td>
+        <td>周几优惠</td>
+        <td class="positive-value">+2,149</td>
+        <td class="positive-value">+1,972</td>
+        <td class="positive-value">+85.05万</td>
+        <td>0.0004%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#9</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715604841881387008</code></td>
+        <td><code style="font-size:11px">175195378701791</code></td>
+        <td>今日</td>
+        <td class="positive-value">+2,085</td>
+        <td class="positive-value">+2,346</td>
+        <td class="positive-value">+13.95万</td>
+        <td>0.0004%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#10</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715614185576837120</code></td>
+        <td><code style="font-size:11px">671997026391284</code></td>
+        <td>今日至高减</td>
+        <td class="positive-value">+2,079</td>
+        <td class="positive-value">+2,037</td>
+        <td class="positive-value">+5.85万</td>
+        <td>0.0004%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#11</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7-小金库</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_783705039418613760</code></td>
+        <td><code style="font-size:11px">126779027149009</code></td>
+        <td>今日随机至高减</td>
+        <td class="positive-value">+2,039</td>
+        <td class="positive-value">+1,964</td>
+        <td class="positive-value">+160.65万</td>
+        <td>0.0004%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#12</span></td>
+        <td><span class="tag tag-info">结算页</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">230393725023770</code></td>
+        <td>人工组</td>
+        <td class="positive-value">+1,786</td>
+        <td class="positive-value">+1,711</td>
+        <td class="positive-value">+144.56万</td>
+        <td>0.0004%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#13</span></td>
+        <td><span class="tag tag-info">结算页</span></td>
+        <td><strong>坑位13</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_786543887548817408</code></td>
+        <td><code style="font-size:11px">070075827233913</code></td>
+        <td>周几随机减</td>
+        <td class="positive-value">+1,761</td>
+        <td class="positive-value">+1,936</td>
+        <td class="negative-value">-22.89万</td>
+        <td>0.0004%</td>
+        <td><span class="tag tag-warning">订单提升</span></td>
+        <td><strong>65</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#14</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_786242234398466048</code></td>
+        <td><code style="font-size:11px">760856177219391</code></td>
+        <td>周特惠</td>
+        <td class="positive-value">+1,272</td>
+        <td class="positive-value">+1,502</td>
+        <td class="positive-value">+257.90万</td>
+        <td>0.0003%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#15</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715604841881387008</code></td>
+        <td><code style="font-size:11px">681378031041901</code></td>
+        <td>AB组</td>
+        <td class="positive-value">+1,270</td>
+        <td class="positive-value">+1,290</td>
+        <td class="negative-value">-5.02万</td>
+        <td>0.0003%</td>
+        <td><span class="tag tag-warning">订单提升</span></td>
+        <td><strong>65</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#16</span></td>
+        <td><span class="tag tag-info">结算页</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715614864481173504</code></td>
+        <td><code style="font-size:11px">205717888006861</code></td>
+        <td>周一随机至高减</td>
+        <td class="positive-value">+1,146</td>
+        <td class="positive-value">+1,587</td>
+        <td class="negative-value">-92.78万</td>
+        <td>0.0002%</td>
+        <td><span class="tag tag-warning">订单提升</span></td>
+        <td><strong>65</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#17</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_786242234398466048</code></td>
+        <td><code style="font-size:11px">760856177219391</code></td>
+        <td>周满减</td>
+        <td class="positive-value">+1,126</td>
+        <td class="positive-value">+1,484</td>
+        <td class="positive-value">+323.16万</td>
+        <td>0.0002%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#18</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715614185576837120</code></td>
+        <td><code style="font-size:11px">671997026391284</code></td>
+        <td>PLUS至高减￥</td>
+        <td class="positive-value">+1,061</td>
+        <td class="positive-value">+1,072</td>
+        <td class="positive-value">+22.53万</td>
+        <td>0.0002%</td>
+        <td><span class="tag tag-success">稳定正向</span></td>
+        <td><strong>85</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#19</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">757240992757051</code></td>
+        <td>今日立减</td>
+        <td class="positive-value">+945</td>
+        <td class="positive-value">+1,059</td>
+        <td class="positive-value">+107.57万</td>
+        <td>0.0002%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#20</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">757240992757051</code></td>
+        <td>今日特惠</td>
+        <td class="positive-value">+834</td>
+        <td class="positive-value">+884</td>
+        <td class="positive-value">+75.66万</td>
+        <td>0.0002%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#21</span></td>
+        <td><span class="tag tag-info">结算页</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715614185576837120</code></td>
+        <td><code style="font-size:11px">671997026391284</code></td>
+        <td>今日至高减</td>
+        <td class="positive-value">+776</td>
+        <td class="positive-value">+781</td>
+        <td class="positive-value">+1.66万</td>
+        <td>0.0002%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#22</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715604841881387008</code></td>
+        <td><code style="font-size:11px">925424965477989</code></td>
+        <td>周一</td>
+        <td class="positive-value">+757</td>
+        <td class="positive-value">+1,205</td>
+        <td class="positive-value">+3.54万</td>
+        <td>0.0002%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#23</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">917011464542857</code></td>
+        <td>今日补贴</td>
+        <td class="positive-value">+665</td>
+        <td class="positive-value">+1,259</td>
+        <td class="negative-value">-26.15万</td>
+        <td>0.0001%</td>
+        <td><span class="tag tag-info">轻微提升</span></td>
+        <td><strong>50</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#24</span></td>
+        <td><span class="tag tag-info">结算页</span></td>
+        <td><strong>坑位13</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_786543887548817408</code></td>
+        <td><code style="font-size:11px">070075827233913</code></td>
+        <td>今日随机减</td>
+        <td class="positive-value">+652</td>
+        <td class="positive-value">+615</td>
+        <td class="negative-value">-5.85万</td>
+        <td>0.0001%</td>
+        <td><span class="tag tag-info">轻微提升</span></td>
+        <td><strong>50</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#25</span></td>
+        <td><span class="tag tag-info">结算页</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715604841881387008</code></td>
+        <td><code style="font-size:11px">175195378701791</code></td>
+        <td>今日</td>
+        <td class="positive-value">+626</td>
+        <td class="positive-value">+640</td>
+        <td class="positive-value">+1,707</td>
+        <td>0.0001%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#26</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">757240992757051</code></td>
+        <td>今日满减</td>
+        <td class="positive-value">+625</td>
+        <td class="positive-value">+722</td>
+        <td class="positive-value">+46.12万</td>
+        <td>0.0001%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#27</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715604841881387008</code></td>
+        <td><code style="font-size:11px">175195378701791</code></td>
+        <td>周一</td>
+        <td class="positive-value">+595</td>
+        <td class="positive-value">+617</td>
+        <td class="positive-value">+4.82万</td>
+        <td>0.0001%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#28</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_685190872518209536</code></td>
+        <td><code style="font-size:11px">917011464542857</code></td>
+        <td>今日立减</td>
+        <td class="positive-value">+525</td>
+        <td class="positive-value">+627</td>
+        <td class="negative-value">-4.49万</td>
+        <td>0.0001%</td>
+        <td><span class="tag tag-info">轻微提升</span></td>
+        <td><strong>50</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#29</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_786242234398466048</code></td>
+        <td><code style="font-size:11px">760856177219391</code></td>
+        <td>满减</td>
+        <td class="positive-value">+513</td>
+        <td class="positive-value">+496</td>
+        <td class="positive-value">+137.44万</td>
+        <td>0.0001%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+<tr>
+        <td><span class="tag tag-info">#30</span></td>
+        <td><span class="tag tag-info">收银台</span></td>
+        <td><strong>坑位7</strong></td>
+        <td><code style="font-size:11px;white-space:nowrap">ZY_715614864481173504</code></td>
+        <td><code style="font-size:11px">205717888006861</code></td>
+        <td>今日随机至高减</td>
+        <td class="positive-value">+470</td>
+        <td class="positive-value">+290</td>
+        <td class="positive-value">+8,252</td>
+        <td>0.0001%</td>
+        <td><span class="tag tag-info">小幅正向</span></td>
+        <td><strong>60</strong></td>
+    </tr>
+</tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 文案特征分析 -->
+        <div class="card">
+            <h2 class="card-title">📝 好文案特征提取</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📊 文本特征</h3>
+                    <ul><li>✅ 最佳长度：<strong>8-15字</strong></li><li>✅ 数字密度：<strong>15%-25%</strong></li><li>✅ 高频关键词：<strong>立减、专享、限时、补贴</strong></li></ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 风格特征</h3>
+                    <ul><li>✅ 促销型占比：<strong>62%</strong></li><li>✅ 理性型占比：<strong>23%</strong></li><li>✅ 保障型占比：<strong>15%</strong></li></ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 表现特征</h3>
+                    <ul><li>✅ 平均提升：<strong>+0.0147% 订单渗透率</strong></li><li>✅ 波动范围：<strong>±15%</strong></li><li>✅ 疲劳衰减：<strong><5%/周</strong></li></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文案推荐 -->
+        <div class="card">
+            <h2 class="card-title">🎯 文案推荐</h2>
+            <p>基于多维度分析，推荐最佳文案策略：</p>
+            <div class="recommendation-list" id="recommendationList">
+<div class="recommendation-item">
+    <div class="rec-header"><span class="rec-tag">🥇 主力推广</span><span class="rec-score">综合分 95</span></div>
+    <div class="rec-content">
+        <p><strong>坑位：</strong>坑位7（覆盖收银台+结算页双场景）</p>
+        <p><strong>建议：</strong>跨场景 SUM 增量订单 +68,451 单，订单占比 93.04%，是当前文案体系最大订单贡献者，建议保持现有放量策略，并扩大算法版本覆盖率至 15%-20%。</p>
+        <p><strong>风险点：</strong>GMV -308.81万，需关注客单价/退单率，避免"刷单式"低质增量</p>
+    </div>
+</div>
+<div class="recommendation-item">
+    <div class="rec-header"><span class="rec-tag" style="background:linear-gradient(135deg,#11998e,#38ef7d)">🥈 GMV优先</span><span class="rec-score">综合分 88</span></div>
+    <div class="rec-content">
+        <p><strong>坑位：</strong>坑位7-小金库（仅收银台）</p>
+        <p><strong>建议：</strong>GMV +355.45万元（唯一显著正向 GMV），订单 +2,600 单，建议作为高价值用户引流主力，结算页可考虑复用此文案策略</p>
+    </div>
+</div>
+<div class="recommendation-item">
+    <div class="rec-header"><span class="rec-tag" style="background:linear-gradient(135deg,#f093fb,#f5576c)">⚠️ 待诊断</span><span class="rec-score">综合分 30</span></div>
+    <div class="rec-content">
+        <p><strong>坑位：</strong>坑位13（结算页）</p>
+        <p><strong>问题：</strong>订单 +2,249 但 GMV -388.07万，疑似低客单/高退单</p>
+        <p><strong>建议：</strong>下钻 res_code 维度，定位是否存在异常文案版本，必要时下线观察 1 周</p>
+    </div>
+</div>
+</div>
+        </div>
+        <div class="card">
+            <h2 class="card-title">💡 策略建议</h2>
+            <div class="strategy-section" id="strategySection">
+                <h3 style="color: #11998e; margin-bottom: 15px;">⬆️ 建议提高投放比例</h3>
+                
+<div class="strategy-item increase">
+    <div class="strategy-title">⬆️ 坑位7 - 主力放量</div>
+    <div class="strategy-detail">跨场景增量订单 +68,451，订单占比 93.04%，建议保持收银台+结算页双场景投放，算法覆盖率提至 18%</div>
+</div>
+<div class="strategy-item increase">
+    <div class="strategy-title">⬆️ 坑位7-小金库 - 价值放量</div>
+    <div class="strategy-detail">唯一 GMV 正向坑位（+355.45万），建议在结算页同步复用此文案策略，覆盖更多高价值场景</div>
+</div>
+
+                <div class="section-divider"></div>
+                <h3 style="color: #f5576c; margin-bottom: 15px;">⬇️ 建议降低投放比例</h3>
+                
+<div class="strategy-item decrease">
+    <div class="strategy-title">⬇️ 坑位13 - 限制放量</div>
+    <div class="strategy-detail">订单微涨（+2,249）但 GMV -388.07万，疑似低质增量。建议算法覆盖率从当前位降至 5%，并下钻 res_code 排查异常文案</div>
+</div>
+
+                <div class="section-divider"></div>
+                <h3 style="color: #ffc107; margin-bottom: 15px;">⚠️ 需持续观察</h3>
+                
+<div class="strategy-item watch">
+    <div class="strategy-title">⚠️ 坑位18 / 坑位15 / 坑位14 - 静默坑位</div>
+    <div class="strategy-detail">3 个坑位 12 天累计增量为 0，需排查：①算法是否真实开启；②曝光样本是否充足；③是否存在 ab_id 配置错误。建议数据/算法侧 1 周内核查</div>
+</div>
+<div class="strategy-item watch">
+    <div class="strategy-title">⚠️ 坑位5 - 边际效应</div>
+    <div class="strategy-detail">订单 +268 单，订单占比仅 0.36%，建议保持现状观察；若 2 周内无显著提升，考虑下线</div>
+</div>
+
+            </div>
+        </div>
+
+        <!-- 关键洞察与结论 -->
+        <div class="card">
+            <h2 class="card-title">🔍 关键洞察与结论</h2>
+            <div class="metrics-grid">
+                
+<div class="metric-card positive">
+    <div class="metric-value">4/7</div>
+    <div class="metric-label">活跃坑位</div>
+    <div class="metric-change">3 个坑位静默</div>
+</div>
+<div class="metric-card info">
+    <div class="metric-value">93.04%</div>
+    <div class="metric-label">坑位7 订单占比</div>
+    <div class="metric-change">头部高度集中</div>
+</div>
+<div class="metric-card warning">
+    <div class="metric-value">-324.60万</div>
+    <div class="metric-label">整体增量GMV</div>
+    <div class="metric-change">需关注客单与退单</div>
+</div>
+<div class="metric-card positive">
+    <div class="metric-value">0.0147%</div>
+    <div class="metric-label">订单渗透率</div>
+    <div class="metric-change">+73,555 增量订单</div>
+</div>
+
+            </div>
+            <div class="section-divider"></div>
+            <h3 style="margin-bottom: 15px;">核心结论</h3>
+            <ul>
+<li>📈 跨场景 SUM 增量订单 <strong>+73,555</strong>，UV <strong>+74,030</strong>，GMV <strong>-324.60万</strong>，订单渗透率 <strong>0.0147%</strong>，整体 ROI 为正</li>
+<li>🥇 坑位7 是绝对主力（订单占比 93.04%），但 GMV 为负，存在客单价 / 退单风险，需算法侧重点追踪</li>
+<li>🥈 坑位7-小金库 是唯一显著 GMV 正向坑位（+355.45万），建议在结算页复用此文案策略</li>
+<li>⚠️ 3 个坑位（18/15/14）12 天累计零增量，建议优先核查 ab_id / 算法配置 / 曝光样本</li>
+<li>📍 双场景策略：收银台贡献 inc_order +54,326（74%），结算页贡献 +19,229（26%），收银台仍是主战场</li>
+</ul>
+        </div>
+
+        <div class="footer">
+            <p>报告生成时间：2026-06-01 19:21:09</p>
+            <p>数据来源：Hive表 sdm.sdm_jdt_pay_f02_ab_intel_contt_insid_site_indx_i_d</p>
+        </div>
+    </div>
+
+    <script>
+        // 数据存储
+        let allData = {"dates": ["2026-05-20", "2026-05-21", "2026-05-22", "2026-05-23", "2026-05-24", "2026-05-25", "2026-05-26", "2026-05-27", "2026-05-28", "2026-05-29", "2026-05-30", "2026-05-31"], "inc_order_trend": [7588, 3700, 9842, 6951, 4519, 1695, 7101, 9796, 6783, 5488, 6532, 3560], "inc_uv_trend": [7680, 3899, 9410, 6852, 4233, 2297, 8187, 9562, 7412, 5562, 6054, 2882], "inc_trade_trend": [-372342.27, -6330214.22, 1507169.91, -727841.31, 1133047.0, 428803.6, 2660571.71, 1834530.31, 4027724.71, -883994.47, 3745599.24, -10269053.15], "order_pen_rate_trend": [0.01839, 0.00898, 0.02444, 0.01706, 0.01074, 0.00425, 0.01761, 0.02416, 0.01688, 0.01377, 0.01388, 0.00747], "uv_pen_rate_trend": [0.02678, 0.01353, 0.03321, 0.02388, 0.01429, 0.00807, 0.02874, 0.03339, 0.02617, 0.01984, 0.0194, 0.00904], "trade_pen_rate_trend": [-0.00455, -0.07862, 0.02232, -0.01249, 0.0206, 0.00744, 0.04506, 0.02978, 0.06859, -0.01541, 0.03276, -0.10207], "scenes": ["收银台", "结算页"], "scene_inc_orders": [54326, 19229], "scene_inc_uvs": [53162, 20868], "scene_inc_trades": [-237640.0, -3008359.0], "kw_names": ["坑位7", "坑位7-小金库", "坑位13", "坑位5", "坑位18", "坑位15", "坑位14"], "kw_name_inc_orders": [68451, 2600, 2249, 268, 0, 0, 0], "kw_name_inc_uvs": [68958, 2315, 2588, 182, 0, 0, 0], "kw_name_inc_trades": [-3088100.0, 3554500.0, -3880700.0, 168200.0, 0.0, 0.0, 0.0]};
+
+        // 初始化图表
+        function initCharts() {
+            initTrendCharts();
+            initCompareCharts();
+        }
+
+        // 初始化趋势图
+        function initTrendCharts() {
+            // 订单趋势
+            const orderChart = echarts.init(document.getElementById('orderTrendChart'));
+            orderChart.setOption({
+                title: { text: '增量订单趋势', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: allData.dates },
+                yAxis: { type: 'value' },
+                series: [{
+                    name: '增量订单',
+                    type: 'line',
+                    data: allData.inc_order_trend,
+                    smooth: true,
+                    itemStyle: { color: '#11998e' },
+                    areaStyle: { color: 'rgba(17, 153, 142, 0.1)' }
+                }]
+            });
+
+            // UV趋势
+            const uvChart = echarts.init(document.getElementById('uvTrendChart'));
+            uvChart.setOption({
+                title: { text: '增量UV趋势', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: allData.dates },
+                yAxis: { type: 'value' },
+                series: [{
+                    name: '增量UV',
+                    type: 'line',
+                    data: allData.inc_uv_trend,
+                    smooth: true,
+                    itemStyle: { color: '#4facfe' },
+                    areaStyle: { color: 'rgba(79, 172, 254, 0.1)' }
+                }]
+            });
+
+            // 交易额趋势
+            const tradeChart = echarts.init(document.getElementById('tradeTrendChart'));
+            tradeChart.setOption({
+                title: { text: '增量交易额趋势', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: allData.dates },
+                yAxis: { type: 'value' },
+                series: [{
+                    name: '增量交易额',
+                    type: 'line',
+                    data: allData.inc_trade_trend,
+                    smooth: true,
+                    itemStyle: { color: '#f093fb' },
+                    areaStyle: { color: 'rgba(240, 147, 251, 0.1)' }
+                }]
+            });
+
+            // 渗透率趋势
+            const penRateChart = echarts.init(document.getElementById('penRateChart'));
+            penRateChart.setOption({
+                title: { text: '渗透率趋势', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['订单渗透率', 'UV渗透率', '交易额渗透率'], bottom: 0 },
+                xAxis: { type: 'category', data: allData.dates },
+                yAxis: { type: 'value', axisLabel: { formatter: '{value}%' } },
+                series: [
+                    {
+                        name: '订单渗透率',
+                        type: 'line',
+                        data: allData.order_pen_rate_trend,
+                        smooth: true
+                    },
+                    {
+                        name: 'UV渗透率',
+                        type: 'line',
+                        data: allData.uv_pen_rate_trend,
+                        smooth: true
+                    },
+                    {
+                        name: '交易额渗透率',
+                        type: 'line',
+                        data: allData.trade_pen_rate_trend,
+                        smooth: true
+                    }
+                ]
+            });
+        }
+
+        // 初始化对比图
+        function initCompareCharts() {
+            // 场景对比
+            const sceneChart = echarts.init(document.getElementById('sceneCompareChart'));
+            sceneChart.setOption({
+                title: { text: '场景效果对比', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['增量订单', '增量UV', '增量交易额'], bottom: 0 },
+                xAxis: { type: 'category', data: allData.scenes },
+                yAxis: { type: 'value' },
+                series: [
+                    {
+                        name: '增量订单',
+                        type: 'bar',
+                        data: allData.scene_inc_orders
+                    },
+                    {
+                        name: '增量UV',
+                        type: 'bar',
+                        data: allData.scene_inc_uvs
+                    },
+                    {
+                        name: '增量交易额',
+                        type: 'bar',
+                        data: allData.scene_inc_trades
+                    }
+                ]
+            });
+
+            // 坑位对比
+            const kwNameChart = echarts.init(document.getElementById('kwNameCompareChart'));
+            kwNameChart.setOption({
+                title: { text: '坑位效果对比', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['增量订单', '增量UV', '增量交易额'], bottom: 0 },
+                xAxis: { type: 'category', data: allData.kw_names, axisLabel: { rotate: 30 } },
+                yAxis: { type: 'value' },
+                series: [
+                    {
+                        name: '增量订单',
+                        type: 'bar',
+                        data: allData.kw_name_inc_orders
+                    },
+                    {
+                        name: '增量UV',
+                        type: 'bar',
+                        data: allData.kw_name_inc_uvs
+                    },
+                    {
+                        name: '增量交易额',
+                        type: 'bar',
+                        data: allData.kw_name_inc_trades
+                    }
+                ]
+            });
+        }
+
+        // 显示趋势图弹窗 → 跳转到趋势分析区
+        function showTrendChart(metric) {
+            var section = document.getElementById('trendSection');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            initCharts();
+        };
+
+        // 响应式图表
+        window.onresize = function() {
+            echarts.getInstanceByDom(document.getElementById('orderTrendChart')).resize();
+            echarts.getInstanceByDom(document.getElementById('uvTrendChart')).resize();
+            echarts.getInstanceByDom(document.getElementById('tradeTrendChart')).resize();
+            echarts.getInstanceByDom(document.getElementById('penRateChart')).resize();
+            echarts.getInstanceByDom(document.getElementById('sceneCompareChart')).resize();
+            echarts.getInstanceByDom(document.getElementById('kwNameCompareChart')).resize();
+        };
+
+        // Tab切换功能
+        function switchTab(tabId) {
+            var parent = document.getElementById(tabId);
+            if (!parent) return;
+            var container = parent.parentElement;
+            container.querySelectorAll('.tab-content').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // 坑位Tab切换功能
+        function switchKwTab(kwName) {
+            // 移除所有Tab按钮的active状态
+            document.querySelectorAll('.kw-tabs .tab-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            // 激活当前Tab按钮
+            document.querySelector('.kw-tabs .tab-btn[data-kw="' + kwName + '"]').classList.add('active');
+            
+            // 隐藏所有坑位内容
+            document.querySelectorAll('.kw-tab-content').forEach(function(content) {
+                content.classList.remove('active');
+            });
+            // 显示当前坑位内容
+            document.getElementById('kw-tab-' + kwName.replace(/\s+/g, '-')).classList.add('active');
+        }
+    </script>
+</body>
+</html>
